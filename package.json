@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "next dev",
-    "commit": "cz"
+    "commit": "cz",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "author": "",
   "license": "ISC",
@@ -15,7 +17,8 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
-    "cz-conventional-changelog": "^3.3.0"
+    "cz-conventional-changelog": "^3.3.0",
+    "jest": "^29.6.4"
   },
   "config": {
     "commitizen": {
