@@ -8,8 +8,8 @@
     "commit": "cz",
     "test": "jest",
     "test:watch": "jest --watch",
-    "lint:check": "prettier --check .",
-    "lint:fix": "prettier --write ."
+    "lint:check": "next lint --dir . && prettier --check .",
+    "lint:fix": "eslint --fix . && prettier --write ."
   },
   "author": "",
   "license": "ISC",
@@ -20,6 +20,9 @@
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^8.48.0",
+    "eslint-config-next": "^13.4.19",
+    "eslint-config-prettier": "^9.0.0",
     "jest": "^29.6.4",
     "prettier": "^3.0.3"
   },
