@@ -7,7 +7,9 @@
     "dev": "next dev",
     "commit": "cz",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint:check": "prettier --check .",
+    "lint:fix": "prettier --write ."
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +20,8 @@
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
-    "jest": "^29.6.4"
+    "jest": "^29.6.4",
+    "prettier": "^3.0.3"
   },
   "config": {
     "commitizen": {
