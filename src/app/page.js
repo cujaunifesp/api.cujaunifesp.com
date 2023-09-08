@@ -1,7 +1,7 @@
 function Home() {
   return (
     <div>
-      <h1>Em Construção</h1>
+      <h1>Estamos construindo o projeto de API do CUJA...</h1>
     </div>
   );
 }
