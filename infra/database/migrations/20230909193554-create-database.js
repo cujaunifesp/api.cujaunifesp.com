@@ -1,4 +1,14 @@
-require("dotenv").config();
+"use strict";
+
+module.exports = {
+  async up(queryInterface) {
+    queryInterface.createDatabase(getDatabaseName());
+  },
+
+  async down(queryInterface) {
+    queryInterface.dropDatabase(getDatabaseName());
+  },
+};
 
 function getDatabaseName() {
   const mainName = `cuja_${process.env.NEXT_PUBLIC_VERCEL_ENV}`;
@@ -8,12 +18,3 @@ function getDatabaseName() {
     : mainName;
   return database;
 }
-
-module.exports = {
-  username: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
-  database: getDatabaseName(),
-  host: process.env.MYSQL_HOST,
-  port: process.env.MYSQL_PORT,
-  dialect: "mysql",
-};

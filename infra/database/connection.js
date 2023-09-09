@@ -12,13 +12,14 @@ const sequelize = new Sequelize(
   },
 );
 
-test();
-
-async function test() {
+async function query(queryString, options) {
   try {
-    await sequelize.authenticate();
-    console.log("Connection has been established successfully.");
+    await sequelize.query(queryString, options);
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
 }
+
+export default Object.freeze({
+  query,
+});
