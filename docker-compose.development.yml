@@ -3,12 +3,8 @@ services:
   db:
     image: mysql:5.7
     restart: always
-    environment:
-      MYSQL_DATABASE: "cuja_development"
-      MYSQL_USER: "local_user"
-      MYSQL_PASSWORD: "local_password"
-      MYSQL_ROOT_PASSWORD: "local_password"
-      MYSQL_ROOT_HOST: "%"
+    env_file:
+      - /.env
     ports:
       - "3306:3306"
     volumes:
