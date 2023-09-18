@@ -1,3 +1,6 @@
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 require("dotenv").config();
 const { Sequelize } = require("sequelize");
 
@@ -11,7 +14,6 @@ const sequelize = new Sequelize(
     dialect: "mysql",
     dialectOptions: {
       ssl: {
-        ca: "infra/database/ca.crt",
         rejectUnauthorized: false,
       },
     },
@@ -19,11 +21,7 @@ const sequelize = new Sequelize(
 );
 
 async function query(queryString, options) {
-  try {
-    await sequelize.query(queryString, options);
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
+  await sequelize.query(queryString, options);
 }
 
 export default Object.freeze({
