@@ -4,18 +4,19 @@
   "description": "API de serviços do CUJA DIGITAL",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && npm run migration:run && next dev",
+    "dev": "npm run services:up && npm run migration:up && next dev",
     "commit": "cz",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll",
     "lint:check": "next lint --dir . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
     "migration:create": "npx sequelize-cli migration:generate --name",
-    "migration:run": "npx retry -t 5000 -- npx sequelize-cli db:migrate",
+    "migration:up": "npx retry -t 5000 -- npx sequelize-cli db:migrate",
+    "migration:undo": "npx sequelize-cli db:migrate:undo",
     "services:up": "docker-compose -f docker-compose.development.yml up -d",
     "services:stop": "docker-compose -f docker-compose.development.yml stop",
     "contribute": "npm run lint:fix && git add . && npm run commit",
-    "vercel-build": "npm run migration:run && next build"
+    "vercel-build": "npm run migration:up && next build"
   },
   "author": "",
   "license": "ISC",
