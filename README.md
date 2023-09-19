@@ -53,7 +53,7 @@ O primeiro passo antes de fazer qualquer alteração no projeto é rodar os test
 npm run dev
 
 # Terminal 2
-npm test
+npm run test
 ```
 
 Você pode escolher deixar os testes rodando enquanto desenvolve (e rodando novamente a cada alteração), usando o comando abaixo:
@@ -63,7 +63,7 @@ Você pode escolher deixar os testes rodando enquanto desenvolve (e rodando nova
 npm run dev
 
 # Terminal 2
-npm test:watch
+npm run test:watch
 ```
 
 Lembre-se de rodar os testes sempre antes e depois de terminar suas implementações e antes de fazer o pull request de suas alterações.
