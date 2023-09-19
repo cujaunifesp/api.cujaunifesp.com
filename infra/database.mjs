@@ -21,7 +21,7 @@ const sequelize = new Sequelize(
 );
 
 async function query(queryString, options) {
-  await sequelize.query(queryString, options);
+  return await sequelize.query(queryString, options);
 }
 
 export default Object.freeze({
