@@ -1,4 +1,4 @@
-import database from "../../infra/db/database.mjs";
+import database from "infra/db/database.mjs";
 
 const isServerlessRuntime = !!process.env.NEXT_PUBLIC_VERCEL_ENV;
 const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
