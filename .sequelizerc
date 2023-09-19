@@ -1,6 +1,6 @@
 var path = require("path");
 
 module.exports = {
-  config: path.resolve("infra", "database-config.js"),
-  "migrations-path": path.resolve("infra", "migrations"),
+  config: path.resolve("infra/db", "config.js"),
+  "migrations-path": path.resolve("infra/db", "migrations"),
 };
