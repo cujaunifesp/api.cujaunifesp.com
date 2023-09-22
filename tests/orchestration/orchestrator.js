@@ -14,7 +14,12 @@ async function refreshDatabase() {
   await database.migrator.up();
 }
 
+async function closeDatabaseConnections() {
+  await database.close();
+}
+
 export default Object.freeze({
   host,
   refreshDatabase,
+  closeDatabaseConnections,
 });

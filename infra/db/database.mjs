@@ -42,8 +42,13 @@ async function query(queryString, options) {
   return await sequelize.query(queryString, options);
 }
 
+async function close() {
+  await sequelize.close();
+}
+
 export default Object.freeze({
   query,
+  close,
   queryTypes: QueryTypes,
   migrator: umzug,
 });
