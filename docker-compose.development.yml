@@ -9,5 +9,14 @@ services:
       - "3306:3306"
     volumes:
       - my-db:/var/lib/mysql
+  mailcatcher:
+    container_name: mailcatcher
+    image: sj26/mailcatcher
+    expose:
+      - 1025
+      - 1080
+    ports:
+      - 1025:1025
+      - 1080:1080
 volumes:
   my-db:

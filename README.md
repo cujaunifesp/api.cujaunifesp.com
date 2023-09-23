@@ -33,7 +33,7 @@ Para rodar o projeto localmente, basta rodar o comando abaixo:
 npm run dev
 ```
 
-Isto irá automaticamente rodar serviços como Banco de dados (incluindo as Migrations) e irá expor um Serviço Web (Frontend e API) no seguinte endereço:
+Isto irá automaticamente rodar serviços como Banco de dados (incluindo as Migrations), Servidor de Email e irá expor um Serviço Web (Frontend e API) no seguinte endereço:
 
 ```bash
 http://localhost:3000/
@@ -103,6 +103,11 @@ E para desfazer todas as migrations, basta rodar:
 ```
 npm run migration:undo:all
 ```
+
+## Verificando emails
+
+O serviço de email local está disponível na porta 1080.
+Para veririficar os emails enviados pelo servidor local acesse http://localhost:1080
 
 ## Rodando lint
 
