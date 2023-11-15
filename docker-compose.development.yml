@@ -1,14 +1,14 @@
 version: "3.3"
 services:
-  db:
-    image: mysql:8.0
-    restart: always
-    env_file:
-      - .env
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cuja
+      POSTGRES_USER: local_user
+      POSTGRES_PASSWORD: local_password
+      POSTGRES_HOST: localhost
     ports:
-      - "3306:3306"
-    volumes:
-      - my-db:/var/lib/mysql
+      - "5432:5432"
   mailcatcher:
     container_name: mailcatcher
     image: sj26/mailcatcher

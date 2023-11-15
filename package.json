@@ -4,31 +4,27 @@
   "description": "API de serviços do CUJA DIGITAL",
   "main": "index.js",
   "scripts": {
-    "dev": "npm run services:up && npm run migration:up && next dev",
+    "dev": "npm run services:up && npm run migrations:up && next dev",
     "commit": "cz",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll",
     "lint:check": "next lint --dir . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
-    "migration:create": "npx sequelize-cli migration:generate --name",
-    "migration:up": "npx retry -t 5000 -- npx sequelize-cli db:migrate",
-    "migration:undo": "npx sequelize-cli db:migrate:undo",
     "services:up": "docker-compose -f docker-compose.development.yml up -d",
     "services:stop": "docker-compose -f docker-compose.development.yml stop",
-    "contribute": "npm run lint:fix && git add . && npm run commit",
-    "vercel-build": "npm run migration:up && next build"
+    "migrations:create": "node-pg-migrate --migrations-dir ./infra/migrations create",
+    "migrations:up": "npx retry -t 5000 -- node-pg-migrate up --envPath ./.env -m infra/migrations",
+    "migrations:down": "npx retry -t 5000 -- node-pg-migrate down --envPath ./.env -m infra/migrations"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "mysql2": "^3.6.0",
     "next": "^13.4.19",
+    "node-pg-migrate": "^6.2.2",
     "nodemailer": "^6.9.5",
+    "pg": "^8.11.3",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "sequelize": "^6.32.1",
-    "sequelize-cli": "^6.6.1",
-    "umzug": "^3.3.1"
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "cz-conventional-changelog": "^3.3.0",
