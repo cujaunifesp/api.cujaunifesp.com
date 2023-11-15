@@ -31,7 +31,6 @@ async function downAllMigrations() {
       direction: "down",
       dbClient: client,
       migrationsTable: "pgmigrations",
-      log: (log) => {},
     });
   } finally {
     client.release();
@@ -46,7 +45,6 @@ async function runAllMigrations() {
       direction: "up",
       dbClient: client,
       migrationsTable: "pgmigrations",
-      log: (log) => {},
     });
   } finally {
     client.release();
