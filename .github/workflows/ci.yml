@@ -25,6 +25,7 @@ jobs:
           node-version: "18"
           cache: "npm"
       - run: npm ci
+      - run: npm run test:prepare
       - run: npm run dev & npx jest --runInBand --passWithNoTests
 
   lint-styles:

@@ -8,6 +8,7 @@
     "commit": "cz",
     "test": "jest --passWithNoTests",
     "test:watch": "jest --watchAll",
+    "test:prepare": "npm run services:up && npm run migrations:up",
     "lint:check": "next lint --dir . && prettier --check .",
     "lint:fix": "eslint --fix . && prettier --write .",
     "services:up": "docker-compose -f docker-compose.development.yml up -d",
