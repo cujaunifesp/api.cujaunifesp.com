@@ -23,21 +23,6 @@ async function query(queryObject) {
   }
 }
 
-async function downAllMigrations() {
-  const client = await pool.connect();
-  try {
-    return await migrationRunner({
-      dir: "./infra/migrations",
-      direction: "down",
-      dbClient: client,
-      migrationsTable: "pgmigrations",
-      log: (log) => {},
-    });
-  } finally {
-    client.release();
-  }
-}
-
 async function runAllMigrations() {
   const client = await pool.connect();
   try {
@@ -53,8 +38,12 @@ async function runAllMigrations() {
   }
 }
 
+async function dropAllTables() {
+  await query("drop schema public cascade; create schema public;");
+}
+
 export default Object.freeze({
   query,
   runAllMigrations,
-  downAllMigrations,
+  dropAllTables,
 });

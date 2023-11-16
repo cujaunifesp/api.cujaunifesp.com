@@ -10,11 +10,16 @@ const host = isProduction
   : `http://${process.env.NEXT_PUBLIC_WEBSERVER_HOST}:${process.env.NEXT_PUBLIC_WEBSERVER_PORT}`;
 
 async function refreshDatabase() {
-  await database.downAllMigrations();
+  await database.dropAllTables();
+  await database.runAllMigrations();
+}
+
+async function runPendingMigrations() {
   await database.runAllMigrations();
 }
 
 export default Object.freeze({
   host,
   refreshDatabase,
+  runPendingMigrations,
 });
