@@ -19,7 +19,7 @@ async function findLastPublishedWithSteps() {
     FROM
         selections
     LEFT JOIN
-        selection_steps steps ON selections.id = steps.selection_id
+        selections_steps steps ON selections.id = steps.selection_id
     WHERE
         selections.published_at IS NOT NULL
     GROUP BY
