@@ -1,5 +1,7 @@
 import nodemailer from "nodemailer";
 
+import emailTemplates from "infra/email-sender/email-templates";
+
 const transporterConfiguration = {
   host: process.env.EMAIL_SMTP_HOST,
   port: process.env.EMAIL_SMTP_PORT,
@@ -27,6 +29,24 @@ async function sendText({ to, subject, text }) {
   await transporter.sendMail(mailOptions);
 }
 
+async function sendWithTemplate({ to, subject, templateName, replacements }) {
+  let html = emailTemplates.emailVerification();
+
+  for (const key in replacements) {
+    html = html.replace(key, replacements[key]);
+  }
+
+  const mailOptions = {
+    from: "no-reply@cujaunifesp.com",
+    to: to,
+    subject: subject,
+    html,
+  };
+
+  await transporter.sendMail(mailOptions);
+}
+
 export default Object.freeze({
   sendText,
+  sendWithTemplate,
 });
