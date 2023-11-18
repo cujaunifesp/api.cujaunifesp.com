@@ -8,3 +8,5 @@ export async function GET(request) {
     ...currentSelection,
   });
 }
+
+export const revalidate = 300;
