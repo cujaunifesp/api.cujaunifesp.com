@@ -15,6 +15,7 @@ describe("POST /v1/auth-service/email-verification", () => {
 
       const responseBody = await response.json();
 
+      expect(response.status).toEqual(201);
       expect(responseBody).toEqual({
         message: "Código de verificação enviado com sucesso",
       });
@@ -30,9 +31,14 @@ describe("POST /v1/auth-service/email-verification", () => {
 
       const responseBody = await response.json();
 
+      expect(response.status).toEqual(500);
       expect(responseBody).toEqual({
         error: {
-          message: "Não foi possível realizar a verificação desse email",
+          statusCode: 500,
+          name: "InternalServerError",
+          message:
+            "Não foi possível completar sua solicitação devido a um erro inesperado.",
+          action: "Entre em contato com o suporte técnico.",
         },
       });
     });
@@ -50,9 +56,14 @@ describe("POST /v1/auth-service/email-verification", () => {
 
       const responseBody = await response.json();
 
+      expect(response.status).toEqual(500);
       expect(responseBody).toEqual({
         error: {
-          message: "Não foi possível realizar a verificação desse email",
+          statusCode: 500,
+          name: "InternalServerError",
+          message:
+            "Não foi possível completar sua solicitação devido a um erro inesperado.",
+          action: "Entre em contato com o suporte técnico.",
         },
       });
     });
