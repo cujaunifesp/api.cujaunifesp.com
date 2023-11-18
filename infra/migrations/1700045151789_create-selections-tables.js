@@ -74,7 +74,7 @@ exports.up = (pgm) => {
     },
   });
 
-  pgm.createTable("selection_steps", {
+  pgm.createTable("selections_steps", {
     id: {
       type: "uuid",
       default: pgm.func("gen_random_uuid()"),
@@ -104,6 +104,6 @@ exports.up = (pgm) => {
 };
 
 exports.down = (pgm) => {
-  pgm.dropTable("selection_steps");
+  pgm.dropTable("selections_steps");
   pgm.dropTable("selections");
 };

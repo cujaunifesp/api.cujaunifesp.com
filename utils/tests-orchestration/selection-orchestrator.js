@@ -52,7 +52,7 @@ async function createNewSelectionStep(selectionStepObject) {
   const results = await database.query({
     text: `
       INSERT INTO
-        selection_steps (title, date, selection_id)
+        selections_steps (title, date, selection_id)
       VALUES
         ($1, $2, $3)
       RETURNING
