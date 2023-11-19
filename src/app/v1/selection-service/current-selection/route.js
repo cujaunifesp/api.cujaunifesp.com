@@ -1,10 +1,11 @@
-import { NextResponse } from "next/server";
-
+import authorizator from "src/services/auth/authorizator";
 import selectionQueryService from "src/services/selection/query";
 import controller from "utils/controller";
 
 export async function GET(request) {
   try {
+    await authorizator.token().can("GET:CURRENT_SELECTION");
+
     const currentSelection = await selectionQueryService.getCurrentSelection();
 
     return controller.response.ok(200, {
