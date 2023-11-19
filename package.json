@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "npm run services:up && npm run migrations:up && next dev",
     "commit": "cz",
-    "test": "jest --passWithNoTests",
+    "test": "jest --passWithNoTests --runInBand --detectOpenHandles",
     "test:watch": "jest --watchAll",
     "ci:prepare": "npm run services:up && npm run migrations:up",
     "ci:dev": "next dev",
@@ -21,6 +21,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "joi": "^17.11.0",
     "next": "^13.4.19",
     "node-pg-migrate": "^6.2.2",
     "nodemailer": "^6.9.5",
