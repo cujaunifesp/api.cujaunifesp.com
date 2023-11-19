@@ -4,7 +4,7 @@ export default Object.freeze({
     verifier: (session, resource) => true,
   },
 
-  "POST:APPLICATION": {
+  "POST:APPLICATIONS": {
     allowUnauthenticated: false,
     verifier: (session, resource) => {
       if (

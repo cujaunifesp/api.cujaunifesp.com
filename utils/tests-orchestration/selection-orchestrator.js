@@ -70,7 +70,30 @@ async function createNewSelectionStep(selectionStepObject) {
   return newSelectionStep;
 }
 
+async function createNewSelectionGroup(selectionGroup) {
+  const results = await database.query({
+    text: `
+      INSERT INTO
+        selections_applications_groups (title, code, selection_id)
+      VALUES
+        ($1, $2, $3)
+      RETURNING
+        *
+      ;`,
+    values: [
+      selectionGroup.title || "Reserva de vagas",
+      selectionGroup.code || "T",
+      selectionGroup.selection_id,
+    ],
+  });
+
+  const newSelectionGroup = results.rows[0];
+
+  return newSelectionGroup;
+}
+
 export default Object.freeze({
   createNewSelection,
   createNewSelectionStep,
+  createNewSelectionGroup,
 });

@@ -35,6 +35,38 @@ async function findLastPublishedWithSteps() {
   return lastPublished;
 }
 
+async function findByIdWithSelectionGroups(id) {
+  const results = await database.query({
+    text: `
+    SELECT
+        selections.*,
+        COALESCE(
+          JSONB_AGG(
+              JSONB_BUILD_OBJECT(
+                  'id', groups.id, 
+                  'title', groups.title,
+                  'code', groups.code
+              )
+          ) FILTER (WHERE groups.id IS NOT NULL),
+          '[]'::JSONB
+      ) AS groups
+    FROM
+        selections
+    LEFT JOIN
+        selections_applications_groups groups ON selections.id = groups.selection_id
+    WHERE
+        selections.id = $1
+    GROUP BY
+        selections.id
+    LIMIT 1;
+    `,
+    values: [id],
+  });
+
+  return results.rows[0];
+}
+
 export default Object.freeze({
   findLastPublishedWithSteps,
+  findByIdWithSelectionGroups,
 });
