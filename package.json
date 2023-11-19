@@ -7,7 +7,7 @@
     "dev": "npm run services:up && npm run migrations:up && next dev",
     "commit": "cz",
     "test": "jest --passWithNoTests --runInBand --detectOpenHandles",
-    "test:watch": "jest --watchAll",
+    "test:watch": "jest --watchAll --runInBand",
     "ci:prepare": "npm run services:up && npm run migrations:up",
     "ci:dev": "next dev",
     "lint:check": "next lint --dir . && prettier --check .",
@@ -22,6 +22,7 @@
   "license": "ISC",
   "dependencies": {
     "joi": "^17.11.0",
+    "jsonwebtoken": "^9.0.2",
     "next": "^13.4.19",
     "node-pg-migrate": "^6.2.2",
     "nodemailer": "^6.9.5",

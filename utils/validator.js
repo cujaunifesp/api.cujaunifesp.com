@@ -100,6 +100,46 @@ const schemas = {
         "any.invalid": `"${keyName}" não pode ser "null".`,
       });
   },
+
+  STRING_AUTH_METHODS: (keyName, options) => {
+    return Joi.string()
+      .trim()
+      .valid("email_verification", "credentials", "admin")
+      .messages({
+        "any.required": `"${keyName}" é um campo obrigatório.`,
+        "string.empty": `"${keyName}" não pode estar em branco.`,
+        "string.base": `"${keyName}" deve ser do tipo String.`,
+        "any.only": `'${keyName}' deve possuir um dos seguintes valores: 'email_credencials', 'credentials' ou 'admin'.`,
+      });
+  },
+
+  STRING: (keyName, options) => {
+    return Joi.string()
+      .min(options.min || 0)
+      .max(options.max || 255)
+      .messages({
+        "any.required": `"${keyName}" é um campo obrigatório.`,
+        "string.empty": `"${keyName}" não pode estar em branco.`,
+        "string.base": `"${keyName}" deve ser do tipo String.`,
+        "string.min": `"${keyName}" deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `"${keyName}" deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `"${keyName}" não pode ser "null".`,
+      });
+  },
+
+  STRING_UPPERCASE: (keyName, options) => {
+    return Joi.string()
+      .min(options.min || 0)
+      .max(options.max || 255)
+      .messages({
+        "any.required": `"${keyName}" é um campo obrigatório.`,
+        "string.empty": `"${keyName}" não pode estar em branco.`,
+        "string.base": `"${keyName}" deve ser do tipo String.`,
+        "string.min": `"${keyName}" deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `"${keyName}" deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `"${keyName}" não pode ser "null".`,
+      });
+  },
 };
 
 export default Object.freeze({

@@ -142,3 +142,24 @@ export class ForbiddenError extends BaseError {
     });
   }
 }
+
+export class TooManyRequestsError extends BaseError {
+  constructor({
+    message,
+    action,
+    context,
+    errorLocationCode,
+    internalErrorMessage,
+  }) {
+    super({
+      message: message || "Você realizou muitas requisições recentemente.",
+      action:
+        action ||
+        "Tente novamente mais tarde ou contate o suporte caso acredite que isso seja um erro.",
+      statusCode: 429,
+      context: context,
+      errorLocationCode: errorLocationCode,
+      internalErrorMessage: internalErrorMessage,
+    });
+  }
+}
