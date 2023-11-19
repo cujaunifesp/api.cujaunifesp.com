@@ -28,6 +28,12 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
+    used: {
+      type: "boolean",
+      default: false,
+      notNull: true,
+    },
+
     expires_at: {
       type: "timestamp with time zone",
       notNull: true,

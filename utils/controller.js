@@ -4,6 +4,7 @@ import {
   ForbiddenError,
   InternalServerError,
   NotFoundError,
+  TooManyRequestsError,
   UnauthorizedError,
   ValidationError,
 } from "utils/errors";
@@ -15,11 +16,12 @@ const response = {
 
 function error(errorObject) {
   if (
-    error instanceof ValidationError ||
-    error instanceof NotFoundError ||
-    error instanceof ForbiddenError ||
-    error instanceof InternalServerError ||
-    error instanceof UnauthorizedError
+    errorObject instanceof ValidationError ||
+    errorObject instanceof NotFoundError ||
+    errorObject instanceof ForbiddenError ||
+    errorObject instanceof InternalServerError ||
+    errorObject instanceof UnauthorizedError ||
+    errorObject instanceof TooManyRequestsError
   ) {
     return NextResponse.json(
       {
