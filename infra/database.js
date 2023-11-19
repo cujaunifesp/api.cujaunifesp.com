@@ -12,18 +12,19 @@ if (!process.env.VERCEL_ENV) {
   delete configurations.ssl;
 }
 
-const pool = new Pool(configurations);
-
 async function query(queryObject) {
+  const pool = new Pool(configurations);
   const client = await pool.connect();
   try {
     return await client.query(queryObject);
   } finally {
     client.release();
+    pool.end();
   }
 }
 
 async function runAllMigrations() {
+  const pool = new Pool(configurations);
   const client = await pool.connect();
   try {
     return await migrationRunner({
@@ -35,6 +36,7 @@ async function runAllMigrations() {
     });
   } finally {
     client.release();
+    pool.end();
   }
 }
 
