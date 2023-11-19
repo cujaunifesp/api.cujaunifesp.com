@@ -30,4 +30,5 @@ function decodeToken(token) {
 
 export default Object.freeze({
   createTokenByEmailVerification,
+  generateToken,
 });

@@ -19,8 +19,12 @@ async function query(queryObject) {
     return await client.query(queryObject);
   } finally {
     client.release();
-    pool.end();
+    await pool.end();
   }
+}
+
+function getNewPool() {
+  return new Pool(configurations);
 }
 
 async function runAllMigrations() {
@@ -36,7 +40,7 @@ async function runAllMigrations() {
     });
   } finally {
     client.release();
-    pool.end();
+    await pool.end();
   }
 }
 
@@ -46,6 +50,7 @@ async function dropAllTables() {
 
 export default Object.freeze({
   query,
+  getNewPool,
   runAllMigrations,
   dropAllTables,
 });

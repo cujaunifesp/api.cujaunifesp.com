@@ -1,4 +1,5 @@
 import database from "infra/database";
+import token from "src/services/auth/token";
 
 async function createEmailVerification({ email, verification_code, expired }) {
   const results = await database.query({
@@ -14,6 +15,11 @@ async function createEmailVerification({ email, verification_code, expired }) {
   return results.rows[0];
 }
 
+function createUserToken(payloadObject) {
+  return token.generateToken(payloadObject);
+}
+
 export default Object.freeze({
   createEmailVerification,
+  createUserToken,
 });

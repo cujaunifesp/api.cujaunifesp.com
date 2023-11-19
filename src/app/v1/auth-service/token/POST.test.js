@@ -72,7 +72,7 @@ describe("Usando método email_verification", () => {
 
     expect(response.status).toEqual(400);
     expect(responseBody.error).toEqual({
-      message: '"verification_code" deve conter no mínimo 6 caracteres.',
+      message: "'verification_code' deve conter no mínimo 6 caracteres.",
       action: "Corrija os dados enviados e tente novamente.",
       name: "ValidationError",
       statusCode: 400,

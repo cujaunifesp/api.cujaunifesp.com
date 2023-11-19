@@ -101,9 +101,38 @@ exports.up = (pgm) => {
       notNull: true,
     },
   });
+
+  pgm.createTable("selections_applications_groups", {
+    id: {
+      type: "uuid",
+      default: pgm.func("gen_random_uuid()"),
+      notNull: true,
+      primaryKey: true,
+      unique: true,
+    },
+
+    title: {
+      type: "varchar(255)",
+      notNull: true,
+    },
+
+    code: {
+      type: "varchar(16)",
+      notNull: true,
+    },
+
+    selection_id: {
+      type: "uuid",
+      references: "selections",
+      onDelete: "CASCADE",
+      onUpdate: "CASCADE",
+      notNull: true,
+    },
+  });
 };
 
 exports.down = (pgm) => {
+  pgm.dropTable("selections_applications_groups");
   pgm.dropTable("selections_steps");
   pgm.dropTable("selections");
 };

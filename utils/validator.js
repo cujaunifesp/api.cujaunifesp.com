@@ -77,11 +77,11 @@ const schemas = {
       .trim()
       .guid({ version: "uuidv4" })
       .messages({
-        "any.required": `"${keyName}" é um campo obrigatório.`,
-        "string.empty": `"${keyName}" não pode estar em branco.`,
-        "string.base": `"${keyName}" deve ser do tipo String.`,
-        "string.guid": `"${keyName}" deve possuir um token UUID na versão 4.`,
-        "any.invalid": `"${keyName}" não pode ser "null".`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.guid": `'${keyName}' deve possuir um token UUID na versão 4.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
       });
   },
 
@@ -93,11 +93,11 @@ const schemas = {
       .lowercase()
       .trim()
       .messages({
-        "any.required": `"${keyName}" é um campo obrigatório.`,
-        "string.empty": `"${keyName}" não pode estar em branco.`,
-        "string.base": `"${keyName}" deve ser do tipo String.`,
-        "string.email": `"${keyName}" deve conter um email válido.`,
-        "any.invalid": `"${keyName}" não pode ser "null".`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.email": `'${keyName}' deve conter um email válido.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
       });
   },
 
@@ -106,39 +106,82 @@ const schemas = {
       .trim()
       .valid("email_verification", "credentials", "admin")
       .messages({
-        "any.required": `"${keyName}" é um campo obrigatório.`,
-        "string.empty": `"${keyName}" não pode estar em branco.`,
-        "string.base": `"${keyName}" deve ser do tipo String.`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
         "any.only": `'${keyName}' deve possuir um dos seguintes valores: 'email_credencials', 'credentials' ou 'admin'.`,
       });
   },
 
   STRING: (keyName, options) => {
     return Joi.string()
-      .min(options.min || 0)
+      .min(options.min || 1)
       .max(options.max || 255)
       .messages({
-        "any.required": `"${keyName}" é um campo obrigatório.`,
-        "string.empty": `"${keyName}" não pode estar em branco.`,
-        "string.base": `"${keyName}" deve ser do tipo String.`,
-        "string.min": `"${keyName}" deve conter no mínimo {#limit} caracteres.`,
-        "string.max": `"${keyName}" deve conter no máximo {#limit} caracteres.`,
-        "any.invalid": `"${keyName}" não pode ser "null".`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
+      });
+  },
+
+  STRING_TRIM: (keyName, options) => {
+    return Joi.string()
+      .min(options.min || 1)
+      .max(options.max || 255)
+      .trim()
+      .messages({
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
+      });
+  },
+
+  STRING_CPF: (keyName, options) => {
+    return Joi.string()
+      .pattern(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/)
+      .trim()
+      .messages({
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.pattern.base": `'${keyName}' deve ser um CPF válido.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
       });
   },
 
   STRING_UPPERCASE: (keyName, options) => {
     return Joi.string()
-      .min(options.min || 0)
+      .min(options.min || 1)
       .max(options.max || 255)
       .messages({
-        "any.required": `"${keyName}" é um campo obrigatório.`,
-        "string.empty": `"${keyName}" não pode estar em branco.`,
-        "string.base": `"${keyName}" deve ser do tipo String.`,
-        "string.min": `"${keyName}" deve conter no mínimo {#limit} caracteres.`,
-        "string.max": `"${keyName}" deve conter no máximo {#limit} caracteres.`,
-        "any.invalid": `"${keyName}" não pode ser "null".`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
       });
+  },
+
+  BOOLEAN: (keyName, options) => {
+    return Joi.boolean().messages({
+      "any.required": `'${keyName}' é um campo obrigatório.`,
+      "string.empty": `'${keyName}' não pode estar em branco.`,
+      "boolean.base": `'${keyName}' deve ser do tipo Boolean.`,
+      "any.invalid": `'${keyName}' não pode ser 'null'.`,
+    });
+  },
+
+  ARRAY: (keyName, options) => {
+    return Joi.array();
   },
 };
 
