@@ -92,8 +92,55 @@ async function createNewSelectionGroup(selectionGroup) {
   return newSelectionGroup;
 }
 
+async function createNewSocioeconomicQuestion(question) {
+  const results = await database.query({
+    text: `
+      INSERT INTO
+        socioeconomic_questions (text, selection_id, number)
+      VALUES
+        ($1, $2, $3)
+      RETURNING
+        *
+      ;`,
+    values: [
+      question.text || "Qual é a sua resposta?",
+      question.selection_id,
+      question.number || null,
+    ],
+  });
+
+  const newQuestion = results.rows[0];
+
+  return newQuestion;
+}
+
+async function createNewSocioeconomicQuestionOption(questionOption) {
+  const results = await database.query({
+    text: `
+      INSERT INTO
+        socioeconomic_questions_options (label, type, socioeconomic_question_id, number)
+      VALUES
+        ($1, $2, $3, $4)
+      RETURNING
+        *
+      ;`,
+    values: [
+      questionOption.label || "Resposta letra A",
+      questionOption.type || "multiple_choice",
+      questionOption.socioeconomic_question_id,
+      questionOption.number || null,
+    ],
+  });
+
+  const newQuestionOption = results.rows[0];
+
+  return newQuestionOption;
+}
+
 export default Object.freeze({
   createNewSelection,
   createNewSelectionStep,
   createNewSelectionGroup,
+  createNewSocioeconomicQuestion,
+  createNewSocioeconomicQuestionOption,
 });

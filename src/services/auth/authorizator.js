@@ -14,7 +14,6 @@ function token(token) {
     try {
       session = jwt.verify(token, process.env.JWT_SIGNER_KEY);
     } catch (error) {
-      console.log(error);
       throw new UnauthorizedError({
         message: "Você está tentando usar um token inválido.",
       });
@@ -50,7 +49,6 @@ function request(headers) {
 
   if (authHeader && authHeader.startsWith("Bearer ")) {
     const userToken = authHeader.substring(7);
-    console.log(userToken, authHeader);
     return token(userToken);
   } else {
     return token();
