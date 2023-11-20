@@ -1,3 +1,5 @@
+import application from "src/models/application";
+
 export default Object.freeze({
   "GET:CURRENT_SELECTION": {
     allowUnauthenticated: true,
@@ -23,6 +25,27 @@ export default Object.freeze({
       if (session.email) {
         return true;
       }
+    },
+  },
+
+  "POST:SOCIOECONOMIC_ANSWERS": {
+    allowUnauthenticated: false,
+    verifier: async (session, resource) => {
+      if (!session.email) {
+        return false;
+      }
+
+      const userApplications = await application.findByEmail(session.email);
+
+      for (let index = 0; index < userApplications.length; index++) {
+        const currentApplication = userApplications[index];
+
+        if (currentApplication.id === resource.application_id) {
+          return true;
+        }
+      }
+
+      return false;
     },
   },
 });

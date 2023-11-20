@@ -54,4 +54,5 @@ async function checkForCPFDuplicate(submitedApplication) {
 
 export default Object.freeze({
   submitNewApplication,
+  checkForApplicationsDate,
 });

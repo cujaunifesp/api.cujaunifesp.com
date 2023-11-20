@@ -80,14 +80,6 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    socioeconomic_question_id: {
-      type: "uuid",
-      references: "socioeconomic_questions",
-      onDelete: "CASCADE",
-      onUpdate: "CASCADE",
-      notNull: true,
-    },
-
     socioeconomic_question_option_id: {
       type: "uuid",
       references: "socioeconomic_questions_options",
@@ -102,6 +94,12 @@ exports.up = (pgm) => {
       onDelete: "CASCADE",
       onUpdate: "CASCADE",
       notNull: true,
+    },
+
+    created_at: {
+      type: "timestamp with time zone",
+      notNull: true,
+      default: pgm.func("(now() at time zone 'utc')"),
     },
   });
 };
