@@ -16,4 +16,13 @@ export default Object.freeze({
       }
     },
   },
+
+  "GET:SOCIOECONOMIC": {
+    allowUnauthenticated: false,
+    verifier: (session, resource) => {
+      if (session.email) {
+        return true;
+      }
+    },
+  },
 });

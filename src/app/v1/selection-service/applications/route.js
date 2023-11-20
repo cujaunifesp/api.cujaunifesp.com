@@ -42,7 +42,6 @@ export async function POST(request) {
 
     return controller.response.ok(201, { ...createdApplication });
   } catch (error) {
-    console.log(error);
     return controller.response.error(error);
   }
 }
