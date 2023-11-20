@@ -183,6 +183,25 @@ const schemas = {
   ARRAY: (keyName, options) => {
     return Joi.array();
   },
+
+  ARRAY_OF_OBJECTS: (keyName, options) => {
+    const objectSchema = {};
+
+    for (const key in options.objectSchema) {
+      const typer = options.objectSchema[key];
+      objectSchema[key] = typer(key, options);
+    }
+
+    return Joi.array()
+      .items(Joi.object(objectSchema))
+      .min(options.min || 0)
+      .messages({
+        "array.base": `'${keyName}' deve ser do tipo Array.`,
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
+        "array.min": `'${keyName}' deve conter pelo menos 1 item.`,
+      });
+  },
 };
 
 export default Object.freeze({

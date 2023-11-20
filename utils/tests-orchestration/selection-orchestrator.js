@@ -1,4 +1,7 @@
+import { faker, simpleFaker } from "@faker-js/faker";
+
 import database from "infra/database";
+import applications from "src/services/selection/applications";
 
 async function createNewSelection(selectionObject) {
   const now = new Date();
@@ -137,10 +140,46 @@ async function createNewSocioeconomicQuestionOption(questionOption) {
   return newQuestionOption;
 }
 
+async function createNewApplication(applicationObject) {
+  const createdApplication = applications.submitNewApplication({
+    name: applicationObject.name || faker.person.fullName(),
+    email: applicationObject.email || faker.internet.email(),
+    phone: applicationObject.phone || faker.phone.number(),
+    cpf: applicationObject.cpf || "999.999.999-99",
+    identity_document:
+      applicationObject.identity_document || simpleFaker.string.numeric(9),
+    address: applicationObject.address || faker.location.streetAddress(),
+    zip_code: applicationObject.zip_code || faker.location.zipCode(),
+    city: applicationObject.city || faker.location.city(),
+    state: applicationObject.state || faker.location.state(),
+    sabbatarian:
+      applicationObject.sabbatarian || simpleFaker.datatype.boolean(),
+    special_assistance:
+      applicationObject.special_assistance || simpleFaker.datatype.boolean(),
+    special_assistance_justification:
+      applicationObject.special_assistance_justification || faker.lorem.text(),
+    selected_groups_ids: applicationObject.selected_groups_ids || [],
+    selection_id: applicationObject.selection_id || simpleFaker.string.uuid(),
+  });
+
+  return createdApplication;
+}
+
+async function closeSelectionApplications(selectionId) {
+  await database.query({
+    text: `
+      UPDATE selections SET applications_end_date = now() WHERE selections.id = $1
+    `,
+    values: [selectionId],
+  });
+}
+
 export default Object.freeze({
   createNewSelection,
   createNewSelectionStep,
   createNewSelectionGroup,
   createNewSocioeconomicQuestion,
   createNewSocioeconomicQuestionOption,
+  createNewApplication,
+  closeSelectionApplications,
 });

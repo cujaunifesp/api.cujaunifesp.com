@@ -129,8 +129,35 @@ async function findUserApplicationDuplicates({ cpf, selection_id }) {
   return results.rows[0];
 }
 
+async function findById(id) {
+  const results = await database.query({
+    text: `
+      SELECT * FROM applications
+      WHERE id = $1
+      LIMIT 1;
+    `,
+    values: [id],
+  });
+
+  return results.rows[0];
+}
+
+async function findByEmail(email) {
+  const results = await database.query({
+    text: `
+      SELECT * FROM applications
+      WHERE email = $1;
+    `,
+    values: [email],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   createApplicationsWithSelectionGroups,
   findByIdWithSelectionGroups,
   findUserApplicationDuplicates,
+  findById,
+  findByEmail,
 });
