@@ -40,7 +40,7 @@ function error(errorObject) {
     },
   });
 
-  //console.error(unknownError);
+  console.error(unknownError);
 
   return NextResponse.json(
     {

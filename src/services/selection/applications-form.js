@@ -1,5 +1,6 @@
 import application from "src/models/application";
 import selection from "src/models/selection";
+import ordersControlService from "src/services/orders/orders-control";
 import { ValidationError } from "utils/errors";
 
 async function applyToSelection(applicationToApply) {
@@ -15,6 +16,8 @@ async function applyToSelection(applicationToApply) {
   const queriedApplication = await application.findByIdWithSelectionGroups(
     createdAppplication.id,
   );
+
+  const createdOrder = await createApplicationOrder(queriedApplication);
 
   return queriedApplication;
 }
@@ -53,7 +56,35 @@ async function throwIfDuplicateApplicationsForCPF(applicationToCheck) {
   }
 }
 
+async function createApplicationOrder(applicationToPay) {
+  const selectionFromApplication = await selection.findById(
+    applicationToPay.selection_id,
+  );
+
+  const now = new Date();
+  const in3days = new Date(now);
+  in3days.setDate(now.getDate() + 3);
+
+  const createdOrder = await ordersControlService.startOrderForUpcomingPayment({
+    description: "Taxa de inscrição no processo seletivo do CUJA",
+    total_amount: selectionFromApplication.applications_price,
+    expires_at: in3days.toISOString(),
+  });
+
+  await assignOrderToApplication({
+    orderId: createdOrder.id,
+    applicationId: applicationToPay.id,
+  });
+
+  return createdOrder;
+}
+
+async function assignOrderToApplication({ orderId, applicationId }) {
+  await application.createApplicationOrder({ orderId, applicationId });
+}
+
 export default Object.freeze({
   applyToSelection,
   throwIfSelectionDeadlineOut,
+  createApplicationOrder,
 });

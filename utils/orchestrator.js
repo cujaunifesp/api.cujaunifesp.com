@@ -1,5 +1,6 @@
 import database from "infra/database";
 import authOrchestrator from "utils/tests-orchestration/auth-orchestrator";
+import ordersOrchestration from "utils/tests-orchestration/orders-orchestration";
 import selectionOrchestrator from "utils/tests-orchestration/selection-orchestrator";
 
 const isServerlessRuntime = !!process.env.NEXT_PUBLIC_VERCEL_ENV;
@@ -26,4 +27,5 @@ export default Object.freeze({
   runPendingMigrations,
   selection: selectionOrchestrator,
   auth: authOrchestrator,
+  orders: ordersOrchestration,
 });
