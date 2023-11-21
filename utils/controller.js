@@ -40,6 +40,8 @@ function error(errorObject) {
     },
   });
 
+  //console.error(unknownError);
+
   return NextResponse.json(
     {
       error: unknownError.getPublicErrorObject(),

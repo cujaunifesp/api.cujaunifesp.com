@@ -14,7 +14,7 @@ async function create({ email, verification_code }) {
   return results.rows[0];
 }
 
-async function findLastVerificationByEmail(email) {
+async function findLastByEmail(email) {
   const results = await database.query({
     text: `
       SELECT 
@@ -33,7 +33,7 @@ async function findLastVerificationByEmail(email) {
   return results.rows[0];
 }
 
-async function update(id, { attempts, used }) {
+async function updateAttemptsAndUse(id, { attempts, used }) {
   const results = await database.query({
     text: `
       UPDATE 
@@ -52,6 +52,6 @@ async function update(id, { attempts, used }) {
 
 export default Object.freeze({
   create,
-  findLastVerificationByEmail,
-  update,
+  findLastByEmail,
+  updateAttemptsAndUse,
 });

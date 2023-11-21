@@ -47,8 +47,7 @@ async function sendVerificationEmail({ to, code }) {
 }
 
 async function verify({ email, verificationCode }) {
-  const lastEmailVerification =
-    await emailVerification.findLastVerificationByEmail(email);
+  const lastEmailVerification = await emailVerification.findLastByEmail(email);
 
   if (!lastEmailVerification) {
     throw new NotFoundError({
@@ -77,7 +76,7 @@ async function verify({ email, verificationCode }) {
     lastEmailVerification.verification_code === verificationCode;
 
   if (!isCodeCorrect) {
-    await emailVerification.update(lastEmailVerification.id, {
+    await emailVerification.updateAttemptsAndUse(lastEmailVerification.id, {
       attempts: lastEmailVerification.attempts + 1,
       used: lastEmailVerification.used,
     });
@@ -89,7 +88,7 @@ async function verify({ email, verificationCode }) {
     });
   }
 
-  await emailVerification.update(lastEmailVerification.id, {
+  await emailVerification.updateAttemptsAndUse(lastEmailVerification.id, {
     attempts: lastEmailVerification.attempts + 1,
     used: true,
   });

@@ -1,4 +1,4 @@
-import orchestrator from "utils/tests-orchestration/orchestrator";
+import orchestrator from "utils/orchestrator";
 
 describe("POST /v1/auth-service/email-verification", () => {
   describe("Iniciar verificação", () => {

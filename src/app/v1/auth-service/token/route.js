@@ -1,5 +1,4 @@
-import emailVerification from "src/services/auth/email-verification";
-import token from "src/services/auth/token";
+import tokenGeneratorService from "src/services/auth/token-generator";
 import controller from "utils/controller";
 import { InternalServerError } from "utils/errors";
 import validator from "utils/validator";
@@ -30,10 +29,11 @@ export async function POST(request) {
     });
 
     if (requestBody.method === "email_verification") {
-      const createdToken = await token.createTokenByEmailVerification({
-        email: requestBody.email,
-        verificationCode: requestBody.verification_code,
-      });
+      const createdToken =
+        await tokenGeneratorService.createTokenByEmailVerification({
+          email: requestBody.email,
+          verificationCode: requestBody.verification_code,
+        });
 
       return controller.response.ok(201, { ...createdToken });
     } else {

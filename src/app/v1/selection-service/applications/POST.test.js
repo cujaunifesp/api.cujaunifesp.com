@@ -1,6 +1,4 @@
-import authOrchestrator from "utils/tests-orchestration/auth-orchestrator";
-import orchestrator from "utils/tests-orchestration/orchestrator";
-import selectionOrchestrator from "utils/tests-orchestration/selection-orchestrator";
+import orchestrator from "utils/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.refreshDatabase();
@@ -12,26 +10,24 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 1",
           code: "T1",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const createdGroup2 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup2 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 2",
           code: "T2",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/applications`,
@@ -73,28 +69,26 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 1",
           code: "T1",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const createdGroup2 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup2 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 2",
           code: "T2",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "teste@teste.com",
@@ -163,28 +157,26 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 1",
           code: "T1",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const createdGroup2 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup2 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 2",
           code: "T2",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "teste@teste.com",
@@ -230,28 +222,26 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 3",
           code: "T3",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const createdGroup2 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup2 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 4",
           code: "T4",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "teste@teste.com",
@@ -297,28 +287,26 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 5",
           code: "T5",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const createdGroup2 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup2 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 6",
           code: "T6",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "teste@teste.com",
@@ -382,20 +370,19 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas 1",
           code: "T1",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "duplicate_cpf@teste.com",
@@ -461,19 +448,18 @@ describe("POST /v1/selection-service/applications", () => {
     });
 
     test("inscrição fora do prazo", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
       });
 
-      const createdGroup1 = await selectionOrchestrator.createNewSelectionGroup(
-        {
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
           title: "Reserva de Vagas",
           code: "TX",
           selection_id: createdSelection.id,
-        },
-      );
+        });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "wrong_date@teste.com",
@@ -519,12 +505,12 @@ describe("POST /v1/selection-service/applications", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
         applications_end_date: date,
       });
 
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         role: "visitor",
         email: "no_group@teste.com",

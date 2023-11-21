@@ -1,6 +1,4 @@
-import authOrchestrator from "utils/tests-orchestration/auth-orchestrator";
-import orchestrator from "utils/tests-orchestration/orchestrator";
-import selectionOrchestrator from "utils/tests-orchestration/selection-orchestrator";
+import orchestrator from "utils/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.refreshDatabase();
@@ -44,7 +42,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
 
   describe("Usuário autenticado", () => {
     test("sem nenhuma pergunta no banco de dados", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "teste@teste.com",
         role: "visitor",
@@ -66,25 +64,25 @@ describe("GET /v1/selection-service/socioeconomic", () => {
     });
 
     test("com uma pergunta de múltipla escolha no banco", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "teste@teste.com",
         role: "visitor",
       });
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo 2000",
       });
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
           number: 1,
         });
 
       const createdOptionA =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "A",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -92,7 +90,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         });
 
       const createdOptionB =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "B",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -100,7 +98,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         });
 
       const createdOptionC =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "C",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -133,32 +131,32 @@ describe("GET /v1/selection-service/socioeconomic", () => {
     });
 
     test("com 2 perguntas do mesmo processo seletivo", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "teste@teste.com",
         role: "visitor",
       });
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo 2000",
       });
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
           number: 1,
         });
 
       const createdQuestion2 =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
           number: 2,
         });
 
       const createdOptionA =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "A",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -166,7 +164,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         });
 
       const createdOptionB =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "B",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -174,7 +172,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         });
 
       const createdOptionC =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "C",
           type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
@@ -182,7 +180,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         });
 
       const createdOptionInput =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Digite aqui",
           type: "number_input",
           socioeconomic_question_id: createdQuestion2.id,
