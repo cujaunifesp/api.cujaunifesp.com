@@ -1,5 +1,4 @@
-import orchestrator from "utils/tests-orchestration/orchestrator";
-import selectionOrchestrator from "utils/tests-orchestration/selection-orchestrator";
+import orchestrator from "utils/orchestrator";
 
 describe("GET /v1/selection-service/current-selection", () => {
   describe("Sem etapas", () => {
@@ -18,7 +17,8 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 1 processo seletivo (0 publicados)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection();
+      const createdSelection =
+        await orchestrator.selection.createNewSelection();
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/current-selection`,
@@ -30,7 +30,7 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 2 processos seletivos (1 publicado)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
       });
 
@@ -61,7 +61,7 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 3 processos seletivos (2 publicados)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
       });
 
@@ -99,17 +99,18 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 1 processo seletivo (0 publicados)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection();
+      const createdSelection =
+        await orchestrator.selection.createNewSelection();
       const createdSelectionStep1 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           selection_id: createdSelection.id,
         });
       const createdSelectionStep2 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           selection_id: createdSelection.id,
         });
       const createdSelectionStep3 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           selection_id: createdSelection.id,
         });
 
@@ -124,21 +125,21 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 2 processos seletivos (1 publicado)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
       });
       const createdSelectionStep1 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 1",
           selection_id: createdSelection.id,
         });
       const createdSelectionStep2 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 2",
           selection_id: createdSelection.id,
         });
       const createdSelectionStep3 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 3",
           selection_id: createdSelection.id,
         });
@@ -186,21 +187,21 @@ describe("GET /v1/selection-service/current-selection", () => {
     });
 
     test("e com 3 processos seletivos (2 publicados)", async () => {
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),
       });
       const createdSelectionStep1 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 1",
           selection_id: createdSelection.id,
         });
       const createdSelectionStep2 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 2",
           selection_id: createdSelection.id,
         });
       const createdSelectionStep3 =
-        await selectionOrchestrator.createNewSelectionStep({
+        await orchestrator.selection.createNewSelectionStep({
           title: "Etapa 3",
           selection_id: createdSelection.id,
         });

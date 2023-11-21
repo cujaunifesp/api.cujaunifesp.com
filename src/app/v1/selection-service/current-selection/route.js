@@ -1,5 +1,5 @@
 import authorizator from "src/services/auth/authorizator";
-import selectionQueryService from "src/services/selection/query";
+import selectionQueryService from "src/services/selection/selection-query";
 import controller from "utils/controller";
 
 export async function GET(request) {

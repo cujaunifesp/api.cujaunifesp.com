@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 
-import authOrchestrator from "utils/tests-orchestration/auth-orchestrator";
-import orchestrator from "utils/tests-orchestration/orchestrator";
+import orchestrator from "utils/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.refreshDatabase();
@@ -31,7 +30,7 @@ describe("Usando método email_verification", () => {
 
   test("sem o verification_code", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "sem_verification_code@teste.com",
       });
 
@@ -56,7 +55,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code inválido", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "invalid_verification_code@teste.com",
       });
 
@@ -81,7 +80,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code válido incorreto", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "wrong_verification_code@teste.com",
         verification_code: "ABC123",
       });
@@ -108,13 +107,13 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code de outro usuário", async () => {
     const createdEmailVerification1 =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "user1_verification_code@teste.com",
         verification_code: "USER01",
       });
 
     const createdEmailVerification2 =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "user2_verification_code@teste.com",
         verification_code: "USER02",
       });
@@ -141,7 +140,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code errado em 11 tentativas", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "attempts_verification_code@teste.com",
         verification_code: "ABC123",
       });
@@ -180,7 +179,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code correto", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "right_verification_code@teste.com",
       });
 
@@ -210,7 +209,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code já usado", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "used_verification_code@teste.com",
       });
 
@@ -245,7 +244,7 @@ describe("Usando método email_verification", () => {
 
   test("com um verification_code expirado", async () => {
     const createdEmailVerification =
-      await authOrchestrator.createEmailVerification({
+      await orchestrator.auth.createEmailVerification({
         email: "expired_verification_code@teste.com",
         expired: true,
       });

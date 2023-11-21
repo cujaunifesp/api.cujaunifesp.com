@@ -1,6 +1,4 @@
-import authOrchestrator from "utils/tests-orchestration/auth-orchestrator";
-import orchestrator from "utils/tests-orchestration/orchestrator";
-import selectionOrchestrator from "utils/tests-orchestration/selection-orchestrator";
+import orchestrator from "utils/orchestrator";
 
 beforeAll(async () => {
   await orchestrator.refreshDatabase();
@@ -151,7 +149,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
     };
 
     test("com apenas uma resposta", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "user@teste.com",
         role: "visitor",
@@ -160,39 +158,48 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo de Exemplo",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup = await selectionOrchestrator.createNewSelectionGroup({
-        title: "Reserva de Vagas - PPI",
-        code: "T1",
-        selection_id: createdSelection.id,
-      });
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é uma pergunta",
           number: 1,
           selection_id: createdSelection.id,
         });
 
       const createdOption =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion.id,
         });
 
       const createdApplication =
-        await selectionOrchestrator.createNewApplication({
+        await orchestrator.selection.createNewApplication({
           email: "user@teste.com",
           selection_id: createdSelection.id,
           selected_groups_ids: [createdGroup.id],
         });
+
+      userTestingData.selection.push(createdSelection);
+      userTestingData.group.push(createdGroup);
+      userTestingData.application.push(createdApplication);
+      userTestingData.question.push(createdQuestion);
+      userTestingData.options.push(createdOption);
+      userTestingData.token = userToken;
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
@@ -222,13 +229,6 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
         application_id: createdApplication.id,
         created_at: responseBody[0].created_at,
       });
-
-      userTestingData.selection[0] = createdSelection;
-      userTestingData.group[0] = createdGroup;
-      userTestingData.application[0] = createdApplication;
-      userTestingData.question[0] = createdQuestion;
-      userTestingData.options[0] = createdOption;
-      userTestingData.token = userToken;
     });
 
     test("com mais de uma resposta", async () => {
@@ -236,28 +236,28 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       date.setDate(date.getDate() + 2);
 
       const createdQuestion1 =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é a pergunta 2[1]",
           number: 2,
           selection_id: userTestingData.selection[0].id,
         });
 
       const createdQuestion2 =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é a pergunta 3[2]",
           number: 2,
           selection_id: userTestingData.selection[0].id,
         });
 
       const createdOption1 =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion1.id,
         });
 
       const createdOption2 =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion2.id,
@@ -316,7 +316,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
     };
 
     test("com inscrição de outra pessoa", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "user2@teste.com",
         role: "visitor",
@@ -325,35 +325,37 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo de Exemplo 2",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup = await selectionOrchestrator.createNewSelectionGroup({
-        title: "Reserva de Vagas - PPI",
-        code: "T1",
-        selection_id: createdSelection.id,
-      });
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é uma pergunta",
           number: 1,
           selection_id: createdSelection.id,
         });
 
       const createdOption =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion.id,
         });
 
       const createdApplication =
-        await selectionOrchestrator.createNewApplication({
+        await orchestrator.selection.createNewApplication({
           email: "another-user@teste.com",
           selection_id: createdSelection.id,
           selected_groups_ids: [createdGroup.id],
@@ -394,7 +396,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
     });
 
     test("com processo seletivo sem inscrições abertas", async () => {
-      const userToken = authOrchestrator.createUserToken({
+      const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "user2@teste.com",
         role: "visitor",
@@ -403,41 +405,43 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo Fechado",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
       });
 
-      const createdGroup = await selectionOrchestrator.createNewSelectionGroup({
-        title: "Um grupo qualquer",
-        code: "T?",
-        selection_id: createdSelection.id,
-      });
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Um grupo qualquer",
+          code: "T?",
+          selection_id: createdSelection.id,
+        },
+      );
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é uma pergunta",
           number: 1,
           selection_id: createdSelection.id,
         });
 
       const createdOption =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion.id,
         });
 
       const createdApplication =
-        await selectionOrchestrator.createNewApplication({
+        await orchestrator.selection.createNewApplication({
           email: "user2@teste.com",
           selection_id: createdSelection.id,
           selected_groups_ids: [createdGroup.id],
         });
 
-      await selectionOrchestrator.closeSelectionApplications(
+      await orchestrator.selection.closeSelectionApplications(
         createdSelection.id,
       );
 
@@ -474,7 +478,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       date.setDate(date.getDate() + 2);
 
       const createdApplication =
-        await selectionOrchestrator.createNewApplication({
+        await orchestrator.selection.createNewApplication({
           email: "user2@teste.com",
           selection_id: userTestingData.selection[0].id,
           selected_groups_ids: [userTestingData.group[0].id],
@@ -508,7 +512,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       expect(response.status).toEqual(422);
       expect(responseBody.error).toEqual({
-        message: "Você tentou responder duas vezes a mesma questão.",
+        message: "Você enviou duas respostas para a mesma questão.",
         action: "Tente enviar apenas uma resposta por questão.",
         name: "ValidationError",
         statusCode: 422,
@@ -520,14 +524,14 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       date.setDate(date.getDate() + 2);
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é uma pergunta nova",
           number: 1,
           selection_id: userTestingData.selection[0].id,
         });
 
       const createdOption =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion.id,
@@ -563,8 +567,8 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       expect(response.status).toEqual(422);
       expect(responseBody.error).toEqual({
         message:
-          "A questão que você está tentando responder não corresponte ao processo seletivo de sua inscrição",
-        action: "Tente responder o formulário da sua inscrição",
+          "A questão que você está tentando responder não corresponte ao processo seletivo de sua inscrição.",
+        action: "Responda apenas o formulário referente a sua inscrição.",
         name: "ValidationError",
         statusCode: 422,
       });
@@ -574,7 +578,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdSelection = await selectionOrchestrator.createNewSelection({
+      const createdSelection = await orchestrator.selection.createNewSelection({
         title: "Processo Seletivo do espertinho",
         published_at: new Date(),
         applications_start_date: new Date(),
@@ -582,14 +586,14 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       });
 
       const createdQuestion =
-        await selectionOrchestrator.createNewSocioeconomicQuestion({
+        await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Essa é uma pergunta de outro processo seletivo",
           number: 1,
           selection_id: createdSelection.id,
         });
 
       const createdOption =
-        await selectionOrchestrator.createNewSocioeconomicQuestionOption({
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
           socioeconomic_question_id: createdQuestion.id,
@@ -617,8 +621,8 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       expect(response.status).toEqual(422);
       expect(responseBody.error).toEqual({
         message:
-          "A questão que você está tentando responder não corresponte ao processo seletivo de sua inscrição",
-        action: "Tente responder o formulário da sua inscrição",
+          "A questão que você está tentando responder não corresponte ao processo seletivo de sua inscrição.",
+        action: "Responda apenas o formulário referente a sua inscrição.",
         name: "ValidationError",
         statusCode: 422,
       });

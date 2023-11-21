@@ -1,75 +1,63 @@
 import database from "infra/database";
 
-async function createApplicationsWithSelectionGroups(applicationObject) {
+async function createApplicationsAndApplyToGroups({
+  applicationToCreate,
+  groupsIdsToApply,
+}) {
   const pool = database.getNewPool();
   const client = await pool.connect();
 
   try {
     await client.query("BEGIN");
 
-    const { rows: applicationsRows } = await client.query({
+    const resultsApplication = await client.query({
       text: `
-      INSERT INTO 
-        applications
-          (
-            name, 
-            social_name,
-            cpf,
-            identity_document,
-            email,
-            phone, 
-            address,
-            zip_code,
-            city,
-            state,
-            sabbatarian,
-            special_assistance,
-            special_assistance_justification,
-            selection_id
-          )
-        VALUES 
-          ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-        RETURNING
-          *
-        ;
+      INSERT INTO applications
+        (
+          name, social_name, cpf, identity_document, email, phone, 
+          address, zip_code, city, state, sabbatarian, special_assistance,
+          special_assistance_justification, selection_id
+        )
+      VALUES 
+        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+      RETURNING *;
       `,
       values: [
-        applicationObject.name,
-        applicationObject.social_name,
-        applicationObject.cpf,
-        applicationObject.identity_document,
-        applicationObject.email,
-        applicationObject.phone,
-        applicationObject.address,
-        applicationObject.zip_code,
-        applicationObject.city,
-        applicationObject.state,
-        applicationObject.sabbatarian,
-        applicationObject.special_assistance,
-        applicationObject.special_assistance_justification,
-        applicationObject.selection_id,
+        applicationToCreate.name,
+        applicationToCreate.social_name,
+        applicationToCreate.cpf,
+        applicationToCreate.identity_document,
+        applicationToCreate.email,
+        applicationToCreate.phone,
+        applicationToCreate.address,
+        applicationToCreate.zip_code,
+        applicationToCreate.city,
+        applicationToCreate.state,
+        applicationToCreate.sabbatarian,
+        applicationToCreate.special_assistance,
+        applicationToCreate.special_assistance_justification,
+        applicationToCreate.selection_id,
       ],
     });
 
-    for (
-      let index = 0;
-      index < applicationObject.selected_groups_ids.length;
-      index++
-    ) {
-      const groupId = applicationObject.selected_groups_ids[index];
-      await client.query({
-        text: `
-          INSERT INTO
-            applications_in_groups (application_id, selection_group_id)
-          VALUES
-            ($1, $2);
-        `,
-        values: [applicationsRows[0].id, groupId],
-      });
-    }
+    const createdApplication = resultsApplication.rows[0];
+
+    const selectionGroupsIds = groupsIdsToApply.map((groupId) => [
+      createdApplication.id,
+      groupId,
+    ]);
+
+    await client.query({
+      text: `
+        INSERT INTO applications_in_groups (application_id, selection_group_id)
+        VALUES ${selectionGroupsIds
+          .map((_, i) => `($${i * 2 + 1}, $${i * 2 + 2})`)
+          .join(", ")};`,
+      values: selectionGroupsIds.flat(),
+    });
 
     await client.query("COMMIT");
-    return applicationsRows[0];
+    return createdApplication;
   } catch (error) {
     await client.query("ROLLBACK");
     throw error;
@@ -115,7 +103,7 @@ async function findByIdWithSelectionGroups(id) {
   return application;
 }
 
-async function findUserApplicationDuplicates({ cpf, selection_id }) {
+async function countWithSelectionAndCPF({ cpf, selectionId }) {
   const results = await database.query({
     text: `
       SELECT count(applications.id) AS applications_count
@@ -123,10 +111,10 @@ async function findUserApplicationDuplicates({ cpf, selection_id }) {
       WHERE applications.cpf = $1
         AND applications.selection_id = $2;
     `,
-    values: [cpf, selection_id],
+    values: [cpf, selectionId],
   });
 
-  return results.rows[0];
+  return results.rows[0].applications_count;
 }
 
 async function findById(id) {
@@ -155,9 +143,9 @@ async function findByEmail(email) {
 }
 
 export default Object.freeze({
-  createApplicationsWithSelectionGroups,
+  createApplicationsAndApplyToGroups,
   findByIdWithSelectionGroups,
-  findUserApplicationDuplicates,
+  countWithSelectionAndCPF,
   findById,
   findByEmail,
 });

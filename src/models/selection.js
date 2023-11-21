@@ -66,7 +66,24 @@ async function findByIdWithSelectionGroups(id) {
   return results.rows[0];
 }
 
+async function findById(id) {
+  const results = await database.query({
+    text: `
+    SELECT
+        *
+    FROM
+        selections
+    WHERE
+        selections.id = $1;
+    `,
+    values: [id],
+  });
+
+  return results.rows[0];
+}
+
 export default Object.freeze({
   findLastPublishedWithSteps,
   findByIdWithSelectionGroups,
+  findById,
 });

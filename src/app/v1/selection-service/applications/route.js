@@ -1,5 +1,5 @@
 import authorizator from "src/services/auth/authorizator";
-import registration from "src/services/selection/applications";
+import applicationsFormService from "src/services/selection/applications-form";
 import controller from "utils/controller";
 import validator from "utils/validator";
 
@@ -38,7 +38,7 @@ export async function POST(request) {
     });
 
     const createdApplication =
-      await registration.submitNewApplication(secureRequestBody);
+      await applicationsFormService.applyToSelection(secureRequestBody);
 
     return controller.response.ok(201, { ...createdApplication });
   } catch (error) {

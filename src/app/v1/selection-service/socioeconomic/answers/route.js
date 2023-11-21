@@ -1,5 +1,5 @@
 import authorizator from "src/services/auth/authorizator";
-import socioeconomic from "src/services/selection/socioeconomic";
+import socioeconomicFormService from "src/services/selection/socioeconomic-form";
 import controller from "utils/controller";
 import validator from "utils/validator";
 
@@ -28,13 +28,15 @@ export async function POST(request) {
         resource: secureRequestBody,
       });
 
-    const createdAnswers = await socioeconomic.createSocioeconomicAnswers({
-      applicationId: secureRequestBody.application_id,
-      answersArray: secureRequestBody.answers,
-    });
+    const createdAnswers =
+      await socioeconomicFormService.submitSocioeconomicAnswersForApplication({
+        applicationId: secureRequestBody.application_id,
+        answersToSave: secureRequestBody.answers,
+      });
 
     return controller.response.ok(201, [...createdAnswers]);
   } catch (error) {
+    console.error(error);
     return controller.response.error(error);
   }
 }

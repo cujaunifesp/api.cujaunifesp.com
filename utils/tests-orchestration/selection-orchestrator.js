@@ -1,7 +1,7 @@
 import { faker, simpleFaker } from "@faker-js/faker";
 
 import database from "infra/database";
-import applications from "src/services/selection/applications";
+import applicationsFormService from "src/services/selection/applications-form";
 
 async function createNewSelection(selectionObject) {
   const now = new Date();
@@ -141,7 +141,7 @@ async function createNewSocioeconomicQuestionOption(questionOption) {
 }
 
 async function createNewApplication(applicationObject) {
-  const createdApplication = applications.submitNewApplication({
+  const createdApplication = applicationsFormService.applyToSelection({
     name: applicationObject.name || faker.person.fullName(),
     email: applicationObject.email || faker.internet.email(),
     phone: applicationObject.phone || faker.phone.number(),
@@ -157,7 +157,8 @@ async function createNewApplication(applicationObject) {
     special_assistance:
       applicationObject.special_assistance || simpleFaker.datatype.boolean(),
     special_assistance_justification:
-      applicationObject.special_assistance_justification || faker.lorem.text(),
+      applicationObject.special_assistance_justification ||
+      faker.lorem.sentence({ max: 6 }),
     selected_groups_ids: applicationObject.selected_groups_ids || [],
     selection_id: applicationObject.selection_id || simpleFaker.string.uuid(),
   });

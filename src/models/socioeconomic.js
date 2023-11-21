@@ -37,6 +37,12 @@ async function findQuestionsBySelectionId(id) {
 }
 
 async function createSocioeconmicAnswers(answersArray) {
+  const answersValues = answersArray.map((answer) => [
+    answer.value,
+    answer.socioeconomic_question_option_id,
+    answer.application_id,
+  ]);
+
   const results = await database.query({
     text: `
       INSERT INTO
@@ -47,36 +53,14 @@ async function createSocioeconmicAnswers(answersArray) {
           application_id
         )
         VALUES
-          ${createValuesString()}
+          ${answersValues
+            .map((_, i) => `($${i * 3 + 1}, $${i * 3 + 2}, $${i * 3 + 3})`)
+            .join(", ")}
       RETURNING
         *
     `,
-    values: answersArray.reduce((previous, current) => {
-      return [
-        ...previous,
-        current.value,
-        current.socioeconomic_question_option_id,
-        current.application_id,
-      ];
-    }, []),
+    values: answersValues.flat(),
   });
-
-  function createValuesLine(lineNumber) {
-    const base = lineNumber * 3;
-    return `($${base + 1}, $${base + 2}, $${base + 3})`;
-  }
-
-  function createValuesString() {
-    const string = answersArray.reduce((previous, current, index) => {
-      return (
-        previous +
-        `${createValuesLine(index)},
-`
-      );
-    }, "");
-
-    return string.slice(0, -2);
-  }
 
   return results.rows;
 }
