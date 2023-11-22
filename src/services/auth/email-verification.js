@@ -39,7 +39,7 @@ async function sendVerificationEmail({ to, code }) {
   await email.sendWithTemplate({
     to,
     subject: "Seu código de verificação",
-    templateName: "emailVerfication",
+    template: email.templates.emailVerification,
     replacements: {
       "{VERIFICATION_CODE}": code,
     },

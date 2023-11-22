@@ -29,8 +29,8 @@ async function sendText({ to, subject, text }) {
   await transporter.sendMail(mailOptions);
 }
 
-async function sendWithTemplate({ to, subject, templateName, replacements }) {
-  let html = emailTemplates.emailVerification();
+async function sendWithTemplate({ to, subject, template, replacements }) {
+  let html = template;
 
   for (const key in replacements) {
     html = html.replace(key, replacements[key]);
@@ -49,4 +49,5 @@ async function sendWithTemplate({ to, subject, templateName, replacements }) {
 export default Object.freeze({
   sendText,
   sendWithTemplate,
+  templates: emailTemplates,
 });
