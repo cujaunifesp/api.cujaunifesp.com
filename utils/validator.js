@@ -202,6 +202,41 @@ const schemas = {
         "array.min": `'${keyName}' deve conter pelo menos 1 item.`,
       });
   },
+
+  INTEGER: (keyName, options) => {
+    return Joi.number()
+      .integer()
+      .min(options.min || 0)
+      .max(options.max || 9007199254740990)
+      .messages({
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "number.base": `'${keyName}' deve ser do tipo Number.`,
+        "number.integer": `'${keyName}' deve ser um Inteiro.`,
+        "number.min": `'${keyName}' deve possuir um valor mínimo de #limit.`,
+        "number.max": `'${keyName}' deve possuir um valor máximo de #limit.`,
+        "number.unsafe": `'${keyName}' deve possuir um valor máximo de #limit.`,
+      });
+  },
+
+  OBJECT_WITH_SCHEMA: (keyName, options) => {
+    const objectSchema = {};
+
+    for (const key in options.objectSchema) {
+      const typer = options.objectSchema[key];
+      objectSchema[key] = typer(key, options);
+    }
+
+    return Joi.object(objectSchema).messages({
+      "any.required": `'${keyName}' é um campo obrigatório.`,
+    });
+  },
+
+  OBJECT: (keyName, options) => {
+    return Joi.object().messages({
+      "any.required": `'${keyName}' é um campo obrigatório.`,
+    });
+  },
 };
 
 export default Object.freeze({

@@ -63,4 +63,9 @@ export default Object.freeze({
       return false;
     },
   },
+
+  "POST:ORDERS_PAYMENTS": {
+    allowUnauthenticated: true,
+    verifier: (session, resource) => true,
+  },
 });

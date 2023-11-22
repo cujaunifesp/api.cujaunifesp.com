@@ -67,7 +67,7 @@ async function createApplicationOrder(applicationToPay) {
 
   const createdOrder = await ordersControlService.startOrderForUpcomingPayment({
     description: "Taxa de inscrição no processo seletivo do CUJA",
-    total_amount: selectionFromApplication.applications_price,
+    amount: selectionFromApplication.applications_price,
     expires_at: in3days.toISOString(),
   });
 

@@ -24,9 +24,50 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
       });
     });
 
-    test("com um id válido", async () => {
+    test("com um id válido inexistente", async () => {
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/applications/9d8f216d-27d0-46a5-bf90-fb7073fe4574/orders`,
+      );
+      const responseBody = await response.json();
+
+      expect(response.status).toEqual(404);
+      expect(responseBody.error).toEqual({
+        message: "Não foi possível encontrar este recurso.",
+        action:
+          "Verifique se o recurso que você está tentando acessar está correto.",
+        name: "NotFoundError",
+        statusCode: 404,
+      });
+    });
+
+    test("com um id válido e existente", async () => {
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo que testa o não autenticado",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: endDate,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de autenticação",
+          code: "AUTH",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "no-token@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
       );
       const responseBody = await response.json();
 
@@ -132,61 +173,14 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
       expect(response.status).toEqual(200);
       expect(responseBody.length).toEqual(1);
       expect(responseBody[0]).toEqual({
-        rejected: false,
-        rejected_at: null,
+        closed_at: null,
         created_at: responseBody[0].created_at,
         description: "Taxa de inscrição no processo seletivo do CUJA",
         expires_at: responseBody[0].expires_at,
         id: responseBody[0].id,
         paid: false,
-        refunded: false,
-        restart_on_fail: true,
         status: "pending",
-        total_amount: responseBody[0].total_amount,
-      });
-    });
-
-    test("com último pedido recusado", async () => {
-      await orchestrator.orders.rejectOrder(testData.user1.order1.id);
-
-      const response = await fetch(
-        `${orchestrator.host}/v1/selection-service/applications/${testData.user1.application.id}/orders`,
-        {
-          method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
-        },
-      );
-
-      const responseBody = await response.json();
-
-      expect(response.status).toEqual(200);
-      expect(responseBody.length).toEqual(2);
-      expect(responseBody[0]).toEqual({
-        rejected: true,
-        rejected_at: responseBody[0].rejected_at,
-        created_at: responseBody[0].created_at,
-        description: "Taxa de inscrição no processo seletivo do CUJA",
-        expires_at: responseBody[0].expires_at,
-        id: responseBody[0].id,
-        paid: false,
-        refunded: false,
-        restart_on_fail: true,
-        status: "pending",
-        total_amount: responseBody[0].total_amount,
-      });
-
-      expect(responseBody[1]).toEqual({
-        rejected: false,
-        rejected_at: null,
-        created_at: responseBody[1].created_at,
-        description: "Taxa de inscrição no processo seletivo do CUJA",
-        expires_at: responseBody[1].expires_at,
-        id: responseBody[1].id,
-        paid: false,
-        refunded: false,
-        restart_on_fail: true,
-        status: "pending",
-        total_amount: responseBody[1].total_amount,
+        amount: responseBody[0].amount,
       });
     });
   });

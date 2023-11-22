@@ -16,14 +16,8 @@ exports.up = (pgm) => {
       type: "varchar(255)",
     },
 
-    total_amount: {
+    amount: {
       type: "decimal(6,2)",
-      notNull: true,
-    },
-
-    restart_on_fail: {
-      type: "boolean",
-      default: true,
       notNull: true,
     },
 
@@ -37,25 +31,13 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    rejected: {
-      type: "boolean",
-      default: false,
-      notNull: true,
-    },
-
-    refunded: {
-      type: "boolean",
-      default: false,
-      notNull: true,
-    },
-
     created_at: {
       type: "timestamp with time zone",
       notNull: true,
       default: pgm.func("(now() at time zone 'utc')"),
     },
 
-    rejected_at: {
+    closed_at: {
       type: "timestamp with time zone",
     },
 
@@ -73,27 +55,13 @@ exports.up = (pgm) => {
       unique: true,
     },
 
-    payer__name: {
-      type: "varchar(255)",
-      notNull: true,
-    },
-
-    payer_phone: {
-      type: "varchar(32)",
-      notNull: true,
+    mercado_pago_id: {
+      type: "integer",
     },
 
     payer_email: {
       type: "varchar(255)",
       notNull: true,
-    },
-
-    payer_cpf: {
-      type: "varchar(14)",
-    },
-
-    payer_cnpj: {
-      type: "varchar(18)",
     },
 
     payment_method_id: {
@@ -103,7 +71,6 @@ exports.up = (pgm) => {
 
     payment_type_id: {
       type: "varchar(100)",
-      notNull: true,
     },
 
     installments: {
@@ -117,21 +84,13 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    addiotional_fee_amount: {
+    additional_fee_amount: {
       type: "decimal(6,2)",
       notNull: true,
-      default: 0,
     },
 
     total_paid_amount: {
       type: "decimal(6,2)",
-      notNull: true,
-    },
-
-    overpaid_amount: {
-      type: "decimal(6,2)",
-      notNull: true,
-      default: 0,
     },
 
     status: {
@@ -139,8 +98,15 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    status_detail: {
-      type: "varchar(100)",
+    cause: {
+      type: "varchar(255)",
+    },
+
+    order_id: {
+      type: "uuid",
+      references: "orders",
+      onDelete: "NO ACTION",
+      onUpdate: "CASCADE",
       notNull: true,
     },
 
