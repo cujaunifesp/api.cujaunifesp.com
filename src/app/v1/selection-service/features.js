@@ -48,4 +48,24 @@ export default Object.freeze({
       return false;
     },
   },
+
+  "GET:APPLICATIONS_ORDERS": {
+    allowUnauthenticated: false,
+    verifier: async (session, resource) => {
+      const applicationToAccess = await application.findById(
+        resource.application_id,
+      );
+
+      if (applicationToAccess.email === session.email) {
+        return true;
+      }
+
+      return false;
+    },
+  },
+
+  "POST:ORDERS_PAYMENTS": {
+    allowUnauthenticated: true,
+    verifier: (session, resource) => true,
+  },
 });

@@ -142,10 +142,50 @@ async function findByEmail(email) {
   return results.rows;
 }
 
+async function createApplicationOrder({ applicationId, orderId }) {
+  const results = await database.query({
+    text: `
+      INSERT INTO
+        applications_orders
+          (application_id, order_id)
+        VALUES
+          ($1, $2)
+        ;
+    `,
+    values: [applicationId, orderId],
+  });
+
+  return results.rows[0];
+}
+
+async function findOrdersByApplicationId(applicationId) {
+  const results = await database.query({
+    text: `
+      SELECT 
+        orders.*
+      FROM
+        applications
+      RIGHT JOIN
+        applications_orders ON applications_orders.application_id = applications.id
+      RIGHT JOIN
+        orders ON orders.id = applications_orders.order_id
+      WHERE
+        applications.id = $1
+      ORDER BY
+        orders.created_at ASC;
+    `,
+    values: [applicationId],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   createApplicationsAndApplyToGroups,
   findByIdWithSelectionGroups,
   countWithSelectionAndCPF,
   findById,
   findByEmail,
+  createApplicationOrder,
+  findOrdersByApplicationId,
 });

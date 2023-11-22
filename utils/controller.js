@@ -4,10 +4,12 @@ import {
   ForbiddenError,
   InternalServerError,
   NotFoundError,
+  ServiceError,
   TooManyRequestsError,
   UnauthorizedError,
   ValidationError,
 } from "utils/errors";
+import validator from "utils/validator";
 
 const response = {
   error,
@@ -21,7 +23,8 @@ function error(errorObject) {
     errorObject instanceof ForbiddenError ||
     errorObject instanceof InternalServerError ||
     errorObject instanceof UnauthorizedError ||
-    errorObject instanceof TooManyRequestsError
+    errorObject instanceof TooManyRequestsError ||
+    errorObject instanceof ServiceError
   ) {
     return NextResponse.json(
       {
@@ -40,7 +43,7 @@ function error(errorObject) {
     },
   });
 
-  //console.error(unknownError);
+  console.error(unknownError);
 
   return NextResponse.json(
     {
@@ -58,6 +61,35 @@ function ok(statusCode, data) {
   });
 }
 
+const request = {
+  getResourceByRequestParams,
+};
+
+async function getResourceByRequestParams({ idParam, resourceModel }) {
+  try {
+    const secure = validator.run(
+      { idParam },
+      {
+        idParam: {
+          required: true,
+          type: validator.types.UUID,
+        },
+      },
+    );
+
+    const resource = await resourceModel.findById(secure.idParam);
+
+    if (!resource) {
+      throw new NotFoundError({});
+    }
+
+    return resource;
+  } catch (error) {
+    throw new NotFoundError({});
+  }
+}
+
 export default Object.freeze({
   response,
+  request,
 });
