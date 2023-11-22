@@ -9,6 +9,17 @@ concurrency:
 jobs:
   tests:
     name: Tests
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      NEXT_PUBLIC_WEBSERVER_HOST: ${{ secrets.NEXT_PUBLIC_WEBSERVER_HOST }}
+      NEXT_PUBLIC_WEBSERVER_PORT: ${{ secrets.NEXT_PUBLIC_WEBSERVER_PORT }}
+      EMAIL_SMTP_HOST: ${{ secrets.EMAIL_SMTP_HOST }}
+      EMAIL_SMTP_PORT: ${{ secrets.EMAIL_SMTP_PORT }}
+      EMAIL_HTTP_HOST: ${{ secrets.EMAIL_HTTP_HOST }}
+      EMAIL_HTTP_PORT: ${{ secrets.EMAIL_HTTP_PORT }}
+      JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY }}
+      MP_ACCESS_TOKEN: ${{ secrets.MP_ACCESS_TOKEN }}
+      MP_PUBLIC_KEY: ${{ secrets.MP_PUBLIC_KEY }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
