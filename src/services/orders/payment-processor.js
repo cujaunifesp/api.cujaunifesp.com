@@ -65,6 +65,7 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     token: paymentDetails.token,
     issuer_id: paymentDetails.issuer_id,
     external_reference: uuid(),
+    notificationUrl: getNotificationUrl(),
   };
 
   const paidPayment = await pay(paymentToPay);
@@ -125,6 +126,41 @@ async function pay(paymentToPay) {
   return response;
 }
 
+async function requestUpdatePaymentStatus(paymentToUpdateMpId) {
+  const client = new MercadoPagoConfig({
+    accessToken: process.env.MP_ACCESS_TOKEN,
+  });
+
+  const payment = new Payment(client);
+
+  const response = await payment.get({
+    id: paymentToUpdateMpId,
+  });
+
+  const paymentToUpdate = {
+    id: response.external_reference,
+    total_paid_amount: response.transaction_details.total_paid_amount,
+    updated_at: response.date_last_updated,
+    approved_at: response.date_approved,
+    status: response.status,
+  };
+
+  const updatedPayment = await order.updatePaymentStatus(paymentToUpdate);
+
+  return updatedPayment;
+}
+
+function getNotificationUrl() {
+  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+
+  if (isProduction) {
+    return `https://${process.env.NEXT_PUBLIC_WEBSERVER_HOST}/v1/orders-service/webhook_mp/payments`;
+  }
+
+  return undefined;
+}
+
 export default Object.freeze({
   startPaymentOrder,
+  requestUpdatePaymentStatus,
 });

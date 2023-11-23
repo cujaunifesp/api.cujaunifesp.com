@@ -74,8 +74,36 @@ async function createPayment(paymentToCreate) {
   return results.rows[0];
 }
 
+async function updatePaymentStatus(paymentToUpdate) {
+  const results = await database.query({
+    text: `
+      UPDATE 
+        orders_payments
+      SET 
+        total_paid_amount = $1, 
+        status = $2, 
+        approved_at = $3, 
+        updated_at = $4
+      WHERE
+        orders_payments.id = $5
+      RETURNING *
+      ;
+    `,
+    values: [
+      paymentToUpdate.total_paid_amount,
+      paymentToUpdate.status,
+      paymentToUpdate.approved_at,
+      paymentToUpdate.updated_at,
+      paymentToUpdate.id,
+    ],
+  });
+
+  return results.rows[0];
+}
+
 export default Object.freeze({
   create,
   findById,
   createPayment,
+  updatePaymentStatus,
 });
