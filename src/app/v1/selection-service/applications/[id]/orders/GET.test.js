@@ -173,13 +173,11 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
       expect(response.status).toEqual(200);
       expect(responseBody.length).toEqual(1);
       expect(responseBody[0]).toEqual({
-        closed_at: null,
         created_at: responseBody[0].created_at,
         description: "Taxa de inscrição no processo seletivo do CUJA",
         expires_at: responseBody[0].expires_at,
         id: responseBody[0].id,
-        paid: false,
-        status: "pending",
+        status: "waiting",
         amount: responseBody[0].amount,
       });
     });

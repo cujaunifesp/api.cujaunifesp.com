@@ -50,7 +50,7 @@ describe("POST /v1/orders-service/orders/[id]/payments", () => {
       });
     });
 
-    test("com um order_id válido existente e reuqisição em branco", async () => {
+    test("com um order_id válido existente e requisição em branco", async () => {
       const createdOrder = await orchestrator.orders.createNewOrder({});
 
       testData.order1 = createdOrder;
@@ -294,9 +294,14 @@ describe("POST /v1/orders-service/orders/[id]/payments", () => {
       });
     });
 
-    test("com pagamento de um pedido encerrado", async () => {
+    test("com pagamento de um pedido em processamento", async () => {
       const createdOrder = await orchestrator.orders.createNewOrder({
-        closed_at: new Date(),
+        expires_at: new Date(),
+      });
+
+      const createdPayment = await orchestrator.orders.createNewPayment({
+        order_id: createdOrder.id,
+        status: "pending",
       });
 
       const response = await fetch(
@@ -317,9 +322,47 @@ describe("POST /v1/orders-service/orders/[id]/payments", () => {
 
       expect(response.status).toEqual(422);
       expect(responseBody.error).toEqual({
-        message: "Esse pedido não aceita mais pagamentos.",
+        message:
+          "Já existe um pagamento em processamento associado nesse pedido.",
+        action: "Aguarde o término do processamento do pagamento.",
+        statusCode: 422,
+        name: "ValidationError",
+      });
+    });
+
+    test("com pagamento de um pedido já pago", async () => {
+      const createdOrder = await orchestrator.orders.createNewOrder({
+        expires_at: new Date(),
+      });
+
+      const createdPayment = await orchestrator.orders.createNewPayment({
+        order_id: createdOrder.id,
+        total_paid_amount: createdOrder.amount,
+        status: "approved",
+        additional_payment_method_fee: 0,
+      });
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/orders-service/orders/${createdOrder.id}/payments`,
+        {
+          method: "POST",
+          body: JSON.stringify({
+            payment_method_id: "pix",
+            payer: {
+              first_name: "User",
+              email: "user2@teste.com",
+            },
+          }),
+        },
+      );
+
+      const responseBody = await response.json();
+
+      expect(response.status).toEqual(422);
+      expect(responseBody.error).toEqual({
+        message: "Esse pedido já está pago.",
         action:
-          "Entre em contato com o suporte caso acredite que isso seja um erro.",
+          "Verifique se você já realizou o pagamento antes ou se está pagando o pedido correto.",
         statusCode: 422,
         name: "ValidationError",
       });
@@ -348,7 +391,7 @@ describe("POST /v1/orders-service/orders/[id]/payments", () => {
 
       expect(response.status).toEqual(201);
       expect(responseBody).toEqual({
-        additional_fee_amount: "0.00",
+        additional_payment_method_fee: "0.00",
         approved_at: null,
         cause: null,
         created_at: responseBody.created_at,
@@ -395,7 +438,7 @@ describe("POST /v1/orders-service/orders/[id]/payments", () => {
 
       expect(response.status).toEqual(201);
       expect(responseBody).toEqual({
-        additional_fee_amount: "3.50",
+        additional_payment_method_fee: "3.50",
         approved_at: null,
         cause: null,
         created_at: responseBody.created_at,

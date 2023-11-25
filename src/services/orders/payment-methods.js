@@ -23,7 +23,8 @@ async function getAvailablePaymentMethods() {
         payment_method_id: method.id,
         name: method.name,
         payment_type_id: method.payment_type_id,
-        additional_fee: paymentMethodsAdditionalFees[method.id] || 0,
+        additional_payment_method_fee:
+          paymentMethodsAdditionalFees[method.id] || 0,
         min_allowed_amount: method.min_allowed_amount,
         max_allowed_amount: method.max_allowed_amount,
       };
