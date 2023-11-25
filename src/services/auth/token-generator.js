@@ -7,7 +7,6 @@ async function createTokenByEmailVerification({ email, verificationCode }) {
   const token = generateToken({
     email,
     method: "email_verification",
-    role: "visitor",
   });
   const decoded = decodeToken(token);
   return {

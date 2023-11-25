@@ -43,13 +43,13 @@ describe("Usando método email_verification", () => {
     });
     const responseBody = await response.json();
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(422);
     expect(responseBody.error).toEqual({
       message: "O código de verificação está incorreto.",
       action:
         "Tente novamente ou reenvie o email de confirmação para gerar um novo código.",
-      name: "UnauthorizedError",
-      statusCode: 401,
+      name: "ValidationError",
+      statusCode: 422,
     });
   });
 
@@ -95,13 +95,13 @@ describe("Usando método email_verification", () => {
     });
     const responseBody = await response.json();
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(422);
     expect(responseBody.error).toEqual({
       message: "O código de verificação está incorreto.",
       action:
         "Tente novamente ou reenvie o email de confirmação para gerar um novo código.",
-      name: "UnauthorizedError",
-      statusCode: 401,
+      name: "ValidationError",
+      statusCode: 422,
     });
   });
 
@@ -128,13 +128,13 @@ describe("Usando método email_verification", () => {
     });
     const responseBody = await response.json();
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(422);
     expect(responseBody.error).toEqual({
       message: "O código de verificação está incorreto.",
       action:
         "Tente novamente ou reenvie o email de confirmação para gerar um novo código.",
-      name: "UnauthorizedError",
-      statusCode: 401,
+      name: "ValidationError",
+      statusCode: 422,
     });
   });
 
@@ -203,7 +203,6 @@ describe("Usando método email_verification", () => {
       iat: new Date(responseBody.created_at) / 1000,
       method: "email_verification",
       email: createdEmailVerification.email,
-      role: "visitor",
     });
   });
 
@@ -233,12 +232,12 @@ describe("Usando método email_verification", () => {
 
     const responseBody = await response.json();
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(422);
     expect(responseBody.error).toEqual({
       message: "O código de verificação está expirado.",
       action: "Reenvie o email de confirmação para gerar um novo código.",
-      name: "UnauthorizedError",
-      statusCode: 401,
+      name: "ValidationError",
+      statusCode: 422,
     });
   });
 
@@ -260,12 +259,12 @@ describe("Usando método email_verification", () => {
 
     const responseBody = await response.json();
 
-    expect(response.status).toEqual(401);
+    expect(response.status).toEqual(422);
     expect(responseBody.error).toEqual({
       message: "O código de verificação está expirado.",
       action: "Reenvie o email de confirmação para gerar um novo código.",
-      name: "UnauthorizedError",
-      statusCode: 401,
+      name: "ValidationError",
+      statusCode: 422,
     });
   });
 });

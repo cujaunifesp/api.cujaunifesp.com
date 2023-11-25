@@ -4,6 +4,7 @@ import {
   NotFoundError,
   TooManyRequestsError,
   UnauthorizedError,
+  ValidationError,
 } from "utils/errors";
 
 async function startEmailVerification(email) {
@@ -58,9 +59,10 @@ async function verify({ email, verificationCode }) {
   }
 
   if (lastEmailVerification.expired || lastEmailVerification.used) {
-    throw new UnauthorizedError({
+    throw new ValidationError({
       message: "O código de verificação está expirado.",
       action: "Reenvie o email de confirmação para gerar um novo código.",
+      statusCode: 422,
     });
   }
 
@@ -81,10 +83,11 @@ async function verify({ email, verificationCode }) {
       used: lastEmailVerification.used,
     });
 
-    throw new UnauthorizedError({
+    throw new ValidationError({
       message: "O código de verificação está incorreto.",
       action:
         "Tente novamente ou reenvie o email de confirmação para gerar um novo código.",
+      statusCode: 422,
     });
   }
 
