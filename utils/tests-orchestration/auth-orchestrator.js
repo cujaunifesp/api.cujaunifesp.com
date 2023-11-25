@@ -15,8 +15,8 @@ async function createEmailVerification({ email, verification_code, expired }) {
   return results.rows[0];
 }
 
-function createUserToken(payloadObject) {
-  return tokenGeneratorService.generateToken(payloadObject);
+function createUserToken(payloadObject, options) {
+  return tokenGeneratorService.generateToken(payloadObject, options);
 }
 
 export default Object.freeze({
