@@ -17,9 +17,9 @@ async function createTokenByEmailVerification({ email, verificationCode }) {
   };
 }
 
-function generateToken(payloadObject) {
+function generateToken(payloadObject, options = {}) {
   return jwt.sign(payloadObject, process.env.JWT_SIGNER_KEY, {
-    expiresIn: 604800, //7 dias
+    expiresIn: options.expiresIn || 604800, //7 dias
   });
 }
 
@@ -27,7 +27,39 @@ function decodeToken(token) {
   return jwt.decode(token);
 }
 
+function getGeneratedTokenValidity(token) {
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SIGNER_KEY);
+
+    return {
+      valid: true,
+      token,
+      method: decoded.method,
+      expires_at: new Date(decoded.exp * 1000).toISOString(),
+      created_at: new Date(decoded.iat * 1000).toISOString(),
+    };
+  } catch (error) {
+    const decoded = decodeToken(token);
+
+    if (decoded) {
+      return {
+        valid: false,
+        token,
+        method: decoded?.method,
+        expires_at: new Date(decoded?.exp * 1000).toISOString(),
+        created_at: new Date(decoded?.iat * 1000).toISOString(),
+      };
+    } else {
+      return {
+        token,
+        valid: false,
+      };
+    }
+  }
+}
+
 export default Object.freeze({
   createTokenByEmailVerification,
   generateToken,
+  getGeneratedTokenValidity,
 });
