@@ -6,19 +6,15 @@ async function create(orderToCreate) {
       INSERT INTO
         orders 
           ( 
-            description, amount, status,
-            paid, closed_at, expires_at
+            description, amount, expires_at
           )
         VALUES
-          ($1, $2, $3, $4, $5, $6)
+          ($1, $2, $3)
       RETURNING *;
     `,
     values: [
       orderToCreate.description,
       orderToCreate.amount,
-      orderToCreate.status,
-      orderToCreate.paid,
-      orderToCreate.closed_at,
       orderToCreate.expires_at,
     ],
   });
@@ -29,7 +25,28 @@ async function create(orderToCreate) {
 async function findById(orderId) {
   const results = await database.query({
     text: `
-      SELECT * FROM orders
+      WITH payments AS (
+        SELECT
+          sum(orders_payments.total_paid_amount) FILTER(WHERE orders_payments.status = 'approved') 
+          - sum(orders_payments.additional_payment_method_fee) FILTER(WHERE orders_payments.status = 'approved') AS paid_approved,
+          count(orders_payments) FILTER(WHERE orders_payments.status IN ('in_process', 'in_mediation', 'pending', 'authorized')) AS pending_count, 
+          count(orders_payments) AS payments_count 
+        FROM orders_payments
+        WHERE orders_payments.order_id = $1
+      )
+      SELECT 
+        orders.*,
+        CASE 
+          WHEN (SELECT paid_approved FROM payments) >= orders.amount THEN 'paid'
+          WHEN (SELECT paid_approved FROM payments) < orders.amount 
+            AND orders.expires_at < now()
+            OR (SELECT payments_count FROM payments) = 0 
+            AND orders.expires_at < now()
+            THEN 'not_paid'
+          WHEN (SELECT pending_count FROM payments) > 0 THEN 'pending'
+          ELSE 'waiting'
+        END AS status
+      FROM orders
       WHERE orders.id = $1;
     `,
     values: [orderId],
@@ -46,7 +63,7 @@ async function createPayment(paymentToCreate) {
           (
             id, mercado_pago_id, payer_email, payment_method_id,
             payment_type_id, installments, transaction_amount,
-            additional_fee_amount, total_paid_amount, status,
+            additional_payment_method_fee, total_paid_amount, status,
             cause, order_id, approved_at, updated_at
           )
         VALUES
@@ -61,7 +78,7 @@ async function createPayment(paymentToCreate) {
       paymentToCreate.payment_type_id,
       paymentToCreate.installments,
       paymentToCreate.transaction_amount,
-      paymentToCreate.additional_fee_amount,
+      paymentToCreate.additional_payment_method_fee,
       paymentToCreate.total_paid_amount,
       paymentToCreate.status,
       paymentToCreate.cause,

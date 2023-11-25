@@ -16,17 +16,7 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     });
   }
 
-  const orderExpiresAt = new Date(orderToPay.expires_at);
-  const now = new Date();
-
-  if (orderToPay.closed_at || now > orderExpiresAt) {
-    throw new ValidationError({
-      message: "Esse pedido não aceita mais pagamentos.",
-      action:
-        "Entre em contato com o suporte caso acredite que isso seja um erro.",
-      statusCode: 422,
-    });
-  }
+  await throwIfOrderNotAbleToPay(orderToPay);
 
   const avaiableMethods =
     await paymentMethodsService.getAvailablePaymentMethods();
@@ -45,7 +35,9 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
   }
 
   const orderAmount = new Decimal(orderToPay.amount);
-  const additionalFee = new Decimal(selectedMethod.additional_fee);
+  const additionalFee = new Decimal(
+    selectedMethod.additional_payment_method_fee,
+  );
   const transactionAmount = Decimal.add(orderAmount, additionalFee);
   const maxAllowedAmount = new Decimal(selectedMethod.max_allowed_amount);
 
@@ -65,7 +57,7 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     token: paymentDetails.token,
     issuer_id: paymentDetails.issuer_id,
     external_reference: uuid(),
-    notificationUrl: getNotificationUrl(),
+    notificationUrl: getPaymentNotificationUrl(),
   };
 
   const paidPayment = await pay(paymentToPay);
@@ -78,7 +70,7 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     payment_type_id: paidPayment.payment_type_id || null,
     installments: paidPayment.installments,
     transaction_amount: paidPayment.transaction_amount,
-    additional_fee_amount: additionalFee.toNumber(),
+    additional_payment_method_fee: additionalFee.toNumber(),
     total_paid_amount: paidPayment.total_paid_amount,
     status: paidPayment.status,
     cause: paidPayment.cause,
@@ -98,6 +90,45 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
   }
 
   return createdPayment;
+}
+
+function getPaymentNotificationUrl() {
+  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
+
+  if (isProduction) {
+    return `https://${process.env.NEXT_PUBLIC_WEBSERVER_HOST}/v1/orders-service/webhook_mp/payments`;
+  }
+
+  return undefined;
+}
+
+function throwIfOrderNotAbleToPay(orderToPay) {
+  if (orderToPay.status === "paid") {
+    throw new ValidationError({
+      message: "Esse pedido já está pago.",
+      action:
+        "Verifique se você já realizou o pagamento antes ou se está pagando o pedido correto.",
+      statusCode: 422,
+    });
+  }
+
+  if (orderToPay.status === "not_paid") {
+    throw new ValidationError({
+      message: "Esse pedido não aceita mais pagamentos.",
+      action:
+        "Entre em contato com o suporte caso acredite que isso seja um erro.",
+      statusCode: 422,
+    });
+  }
+
+  if (orderToPay.status === "pending") {
+    throw new ValidationError({
+      message:
+        "Já existe um pagamento em processamento associado nesse pedido.",
+      action: "Aguarde o término do processamento do pagamento.",
+      statusCode: 422,
+    });
+  }
 }
 
 async function pay(paymentToPay) {
@@ -126,7 +157,7 @@ async function pay(paymentToPay) {
   return response;
 }
 
-async function requestUpdatePaymentStatus(paymentToUpdateMpId) {
+async function requestPaymentStatusUpdate(paymentToUpdateMpId) {
   const client = new MercadoPagoConfig({
     accessToken: process.env.MP_ACCESS_TOKEN,
   });
@@ -150,17 +181,7 @@ async function requestUpdatePaymentStatus(paymentToUpdateMpId) {
   return updatedPayment;
 }
 
-function getNotificationUrl() {
-  const isProduction = process.env.NEXT_PUBLIC_VERCEL_ENV === "production";
-
-  if (isProduction) {
-    return `https://${process.env.NEXT_PUBLIC_WEBSERVER_HOST}/v1/orders-service/webhook_mp/payments`;
-  }
-
-  return undefined;
-}
-
 export default Object.freeze({
   startPaymentOrder,
-  requestUpdatePaymentStatus,
+  requestPaymentStatusUpdate,
 });

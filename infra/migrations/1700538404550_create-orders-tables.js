@@ -21,24 +21,10 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    status: {
-      type: "varchar(255)",
-    },
-
-    paid: {
-      type: "boolean",
-      default: false,
-      notNull: true,
-    },
-
     created_at: {
       type: "timestamp with time zone",
       notNull: true,
       default: pgm.func("(now() at time zone 'utc')"),
-    },
-
-    closed_at: {
-      type: "timestamp with time zone",
     },
 
     expires_at: {
@@ -84,7 +70,7 @@ exports.up = (pgm) => {
       notNull: true,
     },
 
-    additional_fee_amount: {
+    additional_payment_method_fee: {
       type: "decimal(6,2)",
       notNull: true,
     },

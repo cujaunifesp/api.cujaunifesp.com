@@ -17,6 +17,7 @@ const response = {
 };
 
 function error(errorObject) {
+  console.error(errorObject);
   if (
     errorObject instanceof ValidationError ||
     errorObject instanceof NotFoundError ||

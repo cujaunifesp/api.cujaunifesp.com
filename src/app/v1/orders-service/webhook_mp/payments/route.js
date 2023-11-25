@@ -47,7 +47,7 @@ export async function POST(request) {
     const secureRequestBody = validator.run(requestBody, requestBodySchema);
 
     const updatedPayment =
-      await paymentProcessorService.requestUpdatePaymentStatus(
+      await paymentProcessorService.requestPaymentStatusUpdate(
         secureRequestBody.data.id,
       );
 
