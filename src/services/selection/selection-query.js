@@ -19,8 +19,15 @@ async function getOrdersFromApplication(applicationId) {
   return findedOrders;
 }
 
+async function getSelectionApplicationsGroups(selectionId) {
+  const findedGroups =
+    await selection.findApplicationsGroupsBySelectionId(selectionId);
+  return findedGroups;
+}
+
 export default Object.freeze({
   getCurrentSelection,
   getSocioeconomicQuestionsBySelectionId,
   getOrdersFromApplication,
+  getSelectionApplicationsGroups,
 });
