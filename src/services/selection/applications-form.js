@@ -49,7 +49,7 @@ async function throwIfDuplicateApplicationsForCPF(applicationToCheck) {
 
   if (applicationsCount > 0) {
     throw new ValidationError({
-      message: "Esse CPF já está sendo usado em outra isncrição.",
+      message: "Esse CPF já está sendo usado em outra inscrição.",
       action: "Entre em contato com o suporte se acreditar que isso é um erro.",
       statusCode: 422,
     });
