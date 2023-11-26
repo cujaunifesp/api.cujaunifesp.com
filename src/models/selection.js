@@ -82,8 +82,29 @@ async function findById(id) {
   return results.rows[0];
 }
 
+async function findApplicationsGroupsBySelectionId(selectionId) {
+  const results = await database.query({
+    text: `
+      SELECT
+        id,
+        title,
+        code
+      FROM
+        selections_applications_groups
+      WHERE
+        selection_id = $1
+      ORDER BY
+        code ASC;
+    `,
+    values: [selectionId],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   findLastPublishedWithSteps,
   findByIdWithSelectionGroups,
+  findApplicationsGroupsBySelectionId,
   findById,
 });

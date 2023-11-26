@@ -6,6 +6,15 @@ export default Object.freeze({
     verifier: (session, resource) => true,
   },
 
+  "GET:SELECTION_GROUPS": {
+    allowUnauthenticated: false,
+    verifier: (session, resource) => {
+      if (session.email) {
+        return true;
+      }
+    },
+  },
+
   "POST:APPLICATIONS": {
     allowUnauthenticated: false,
     verifier: (session, resource) => {
