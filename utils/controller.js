@@ -17,7 +17,6 @@ const response = {
 };
 
 function error(errorObject) {
-  console.error(errorObject);
   if (
     errorObject instanceof ValidationError ||
     errorObject instanceof NotFoundError ||
@@ -27,6 +26,7 @@ function error(errorObject) {
     errorObject instanceof TooManyRequestsError ||
     errorObject instanceof ServiceError
   ) {
+    console.error(errorObject);
     return NextResponse.json(
       {
         error: errorObject.getPublicErrorObject(),

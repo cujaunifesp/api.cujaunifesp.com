@@ -1,3 +1,5 @@
+import { v4 as uuid } from "uuid";
+
 class BaseError extends Error {
   constructor({
     message,
@@ -15,6 +17,7 @@ class BaseError extends Error {
     this.context = context;
     this.errorLocationCode = errorLocationCode;
     this.internalErrorMessage = internalErrorMessage;
+    this.errorId = uuid();
   }
 
   getPublicErrorObject() {
