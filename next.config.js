@@ -3,23 +3,15 @@ module.exports = {
     ignoreDuringBuilds: true,
   },
   async headers() {
-    const securityHeaders = [
-      {
-        key: "X-DNS-Prefetch-Control",
-        value: "on",
-      },
-    ];
-
     return [
-      {
-        source: "/:path*",
-        headers: securityHeaders,
-      },
-
       // ENABLES CORS
       {
-        source: "/v1/:path*",
+        source: "/:path*",
         headers: [
+          {
+            key: "X-DNS-Prefetch-Control",
+            value: "on",
+          },
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
           {
