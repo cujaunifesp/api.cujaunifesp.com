@@ -18,7 +18,7 @@ module.exports = {
 
       // ENABLES CORS
       {
-        source: "/api/:path*",
+        source: "/v1/:path*",
         headers: [
           { key: "Access-Control-Allow-Credentials", value: "true" },
           { key: "Access-Control-Allow-Origin", value: "*" },
