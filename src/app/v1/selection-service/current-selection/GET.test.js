@@ -55,7 +55,6 @@ describe("GET /v1/selection-service/current-selection", () => {
         application_limit: createdSelection.application_limit,
         created_at: createdSelection.created_at.toISOString(),
         published_at: createdSelection.published_at.toISOString(),
-        updated_at: createdSelection.updated_at.toISOString(),
         steps: [],
       });
     });
@@ -87,7 +86,6 @@ describe("GET /v1/selection-service/current-selection", () => {
         application_limit: createdSelection.application_limit,
         created_at: createdSelection.created_at.toISOString(),
         published_at: createdSelection.published_at.toISOString(),
-        updated_at: createdSelection.updated_at.toISOString(),
         steps: [],
       });
     });
@@ -165,7 +163,6 @@ describe("GET /v1/selection-service/current-selection", () => {
         application_limit: createdSelection.application_limit,
         created_at: createdSelection.created_at.toISOString(),
         published_at: createdSelection.published_at.toISOString(),
-        updated_at: createdSelection.updated_at.toISOString(),
         steps: [
           {
             id: createdSelectionStep1.id,
@@ -227,7 +224,6 @@ describe("GET /v1/selection-service/current-selection", () => {
         application_limit: createdSelection.application_limit,
         created_at: createdSelection.created_at.toISOString(),
         published_at: createdSelection.published_at.toISOString(),
-        updated_at: createdSelection.updated_at.toISOString(),
         steps: [
           {
             id: createdSelectionStep1.id,

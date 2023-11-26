@@ -20,7 +20,10 @@ const transporter = nodemailer.createTransport(transporterConfiguration);
 
 async function sendText({ to, subject, text }) {
   const mailOptions = {
-    from: "no-reply@cujaunifesp.com",
+    from: {
+      name: "CUJA Digital",
+      address: "no-reply@cujaunifesp.com",
+    },
     to: to,
     subject: subject,
     text: text,
@@ -37,7 +40,10 @@ async function sendWithTemplate({ to, subject, template, replacements }) {
   }
 
   const mailOptions = {
-    from: "no-reply@cujaunifesp.com",
+    from: {
+      name: "CUJA Digital",
+      address: "no-reply@cujaunifesp.com",
+    },
     to: to,
     subject: subject,
     html,

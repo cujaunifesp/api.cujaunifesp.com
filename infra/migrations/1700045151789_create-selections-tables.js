@@ -66,12 +66,6 @@ exports.up = (pgm) => {
     published_at: {
       type: "timestamp with time zone",
     },
-
-    updated_at: {
-      type: "timestamp with time zone",
-      notNull: true,
-      default: pgm.func("(now() at time zone 'utc')"),
-    },
   });
 
   pgm.createTable("selections_steps", {

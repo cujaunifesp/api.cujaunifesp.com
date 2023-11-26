@@ -29,3 +29,5 @@ export async function GET(request) {
     return controller.response.error(error);
   }
 }
+
+export const revalidate = 600;

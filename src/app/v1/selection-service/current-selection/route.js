@@ -16,4 +16,4 @@ export async function GET(request) {
   }
 }
 
-export const revalidate = 300;
+export const revalidate = 1800; //30 minutos
