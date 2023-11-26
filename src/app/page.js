@@ -1,7 +1,7 @@
 function Home() {
   return (
     <div>
-      <h1>Estamos construindo o projeto de API do CUJA.</h1>
+      <a href="https://api-cuja.readme.io/">Documentaçao da API</a>
     </div>
   );
 }
