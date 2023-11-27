@@ -85,6 +85,21 @@ export default Object.freeze({
     },
   },
 
+  "GET:APPLICATIONS_PAYMENTS": {
+    allowUnauthenticated: false,
+    verifier: async (session, resource) => {
+      if (session.method === "root") {
+        return true;
+      }
+
+      if (resource.email === session.email) {
+        return true;
+      }
+
+      return false;
+    },
+  },
+
   "GET:APPLICATIONS": {
     allowUnauthenticated: false,
     verifier: async (session, resource) => {
