@@ -18,6 +18,10 @@ export default Object.freeze({
   "POST:APPLICATIONS": {
     allowUnauthenticated: false,
     verifier: (session, resource) => {
+      if (session.method === "root") {
+        return true;
+      }
+
       if (
         session.email &&
         resource?.email &&
@@ -44,6 +48,10 @@ export default Object.freeze({
         return false;
       }
 
+      if (session.method === "root") {
+        return true;
+      }
+
       const userApplications = await application.findByEmail(session.email);
 
       for (let index = 0; index < userApplications.length; index++) {
@@ -61,6 +69,10 @@ export default Object.freeze({
   "GET:APPLICATIONS_ORDERS": {
     allowUnauthenticated: false,
     verifier: async (session, resource) => {
+      if (session.method === "root") {
+        return true;
+      }
+
       const applicationToAccess = await application.findById(
         resource.application_id,
       );
@@ -74,6 +86,21 @@ export default Object.freeze({
   },
 
   "GET:APPLICATIONS_PAYMENTS": {
+    allowUnauthenticated: false,
+    verifier: async (session, resource) => {
+      if (session.method === "root") {
+        return true;
+      }
+
+      if (resource.email === session.email) {
+        return true;
+      }
+
+      return false;
+    },
+  },
+
+  "GET:APPLICATIONS": {
     allowUnauthenticated: false,
     verifier: async (session, resource) => {
       if (session.method === "root") {
