@@ -2,6 +2,7 @@ import { faker, simpleFaker } from "@faker-js/faker";
 
 import database from "infra/database";
 import applicationsFormService from "src/services/selection/applications-form";
+import selectionQueryService from "src/services/selection/selection-query";
 
 async function createNewSelection(selectionObject) {
   const now = new Date();
@@ -175,6 +176,12 @@ async function closeSelectionApplications(selectionId) {
   });
 }
 
+async function getApplicationOrders(applicationId) {
+  const findedOrders =
+    await selectionQueryService.getOrdersFromApplication(applicationId);
+  return findedOrders;
+}
+
 export default Object.freeze({
   createNewSelection,
   createNewSelectionStep,
@@ -183,4 +190,5 @@ export default Object.freeze({
   createNewSocioeconomicQuestionOption,
   createNewApplication,
   closeSelectionApplications,
+  getApplicationOrders,
 });

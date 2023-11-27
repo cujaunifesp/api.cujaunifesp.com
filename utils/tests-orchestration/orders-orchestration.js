@@ -29,7 +29,7 @@ async function createNewPayment(paymentToCreate) {
     mercado_pago_id:
       paymentToCreate.mercado_pago_id ||
       faker.number.int({ min: 5, max: 5000 }),
-    payer_email: paymentToCreate.payer_email || faker.internet.email,
+    payer_email: paymentToCreate.payer_email || faker.internet.email(),
     payment_method_id: paymentToCreate.payment_method_id || "pix",
     payment_type_id: paymentToCreate.payment_type_id || null,
     installments: paymentToCreate.installments || 1,

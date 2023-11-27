@@ -1,3 +1,5 @@
+import { MercadoPagoConfig, Payment } from "mercadopago";
+
 import application from "src/models/application";
 import selection from "src/models/selection";
 import socioeconomic from "src/models/socioeconomic";
@@ -19,6 +21,12 @@ async function getOrdersFromApplication(applicationId) {
   return findedOrders;
 }
 
+async function getPaymentsFromApplication(applicationId) {
+  const findedPayments =
+    await application.findPaymentsByApplicationId(applicationId);
+  return findedPayments;
+}
+
 async function getSelectionApplicationsGroups(selectionId) {
   const findedGroups =
     await selection.findApplicationsGroupsBySelectionId(selectionId);
@@ -30,4 +38,5 @@ export default Object.freeze({
   getSocioeconomicQuestionsBySelectionId,
   getOrdersFromApplication,
   getSelectionApplicationsGroups,
+  getPaymentsFromApplication,
 });

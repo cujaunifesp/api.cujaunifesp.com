@@ -199,6 +199,30 @@ async function findOrdersByApplicationId(applicationId) {
   return results.rows;
 }
 
+async function findPaymentsByApplicationId(applicationId) {
+  const results = await database.query({
+    text: `
+      SELECT 
+        orders_payments.*
+      FROM
+        applications
+      RIGHT JOIN
+        applications_orders ON applications_orders.application_id = applications.id
+      RIGHT JOIN
+        orders ON orders.id = applications_orders.order_id
+      RIGHT JOIN
+        orders_payments ON orders_payments.order_id = orders.id 
+      WHERE
+        applications.id = $1
+      ORDER BY
+        orders_payments.created_at ASC;
+    `,
+    values: [applicationId],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   createApplicationsAndApplyToGroups,
   findByIdWithSelectionGroups,
@@ -207,4 +231,5 @@ export default Object.freeze({
   findByEmail,
   createApplicationOrder,
   findOrdersByApplicationId,
+  findPaymentsByApplicationId,
 });
