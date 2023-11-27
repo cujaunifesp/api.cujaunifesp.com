@@ -16,9 +16,7 @@ describe("POST /v1/auth-service/email-verification", () => {
       const responseBody = await response.json();
 
       expect(response.status).toEqual(201);
-      expect(responseBody).toEqual({
-        message: "Código de verificação enviado com sucesso",
-      });
+      expect(responseBody).toEqual({});
     });
 
     test("sem email", async () => {
@@ -26,19 +24,19 @@ describe("POST /v1/auth-service/email-verification", () => {
         `${orchestrator.host}/v1/auth-service/email-verification`,
         {
           method: "POST",
+          body: JSON.stringify({}),
         },
       );
 
       const responseBody = await response.json();
 
-      expect(response.status).toEqual(500);
+      expect(response.status).toEqual(400);
       expect(responseBody).toEqual({
         error: {
-          statusCode: 500,
-          name: "InternalServerError",
-          message:
-            "Não foi possível completar sua solicitação devido a um erro inesperado.",
-          action: "Entre em contato com o suporte técnico.",
+          statusCode: 400,
+          name: "ValidationError",
+          message: "'email' é um campo obrigatório.",
+          action: "Corrija os dados enviados e tente novamente.",
         },
       });
     });
@@ -56,14 +54,13 @@ describe("POST /v1/auth-service/email-verification", () => {
 
       const responseBody = await response.json();
 
-      expect(response.status).toEqual(500);
+      expect(response.status).toEqual(400);
       expect(responseBody).toEqual({
         error: {
-          statusCode: 500,
-          name: "InternalServerError",
-          message:
-            "Não foi possível completar sua solicitação devido a um erro inesperado.",
-          action: "Entre em contato com o suporte técnico.",
+          statusCode: 400,
+          name: "ValidationError",
+          message: "'email' deve conter um email válido.",
+          action: "Corrija os dados enviados e tente novamente.",
         },
       });
     });
