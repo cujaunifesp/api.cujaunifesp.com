@@ -20,8 +20,7 @@ module.exports = {
           },
           {
             key: "Access-Control-Allow-Headers",
-            value:
-              "*",
+            value: "*",
           },
         ],
       },
