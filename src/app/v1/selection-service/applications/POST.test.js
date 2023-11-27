@@ -439,7 +439,7 @@ describe("POST /v1/selection-service/applications", () => {
 
       expect(response.status).toEqual(422);
       expect(responseBody.error).toEqual({
-        message: "Esse CPF já está sendo usado em outra isncrição.",
+        message: "Esse CPF já está sendo usado em outra inscrição.",
         action:
           "Entre em contato com o suporte se acreditar que isso é um erro.",
         statusCode: 422,
