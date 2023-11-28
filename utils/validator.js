@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { validate as uuidValidate } from "uuid";
 
 import { InternalServerError, ValidationError } from "utils/errors";
 
@@ -127,6 +128,31 @@ const schemas = {
       });
   },
 
+  STRING_NOT_UUID: (keyName, options) => {
+    function isNotUUID(value, helpers) {
+      const isUuid = uuidValidate(value);
+      if (isUuid) {
+        return helpers.error("any.base");
+      } else {
+        return value;
+      }
+    }
+
+    return Joi.string()
+      .min(options.min || 1)
+      .max(options.max || 255)
+      .custom(isNotUUID, "isNotUUID")
+      .messages({
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
+        "any.base": `'${keyName}' não pode ser do tipo UUID.`,
+      });
+  },
+
   STRING_TRIM: (keyName, options) => {
     return Joi.string()
       .min(options.min || 1)
@@ -136,6 +162,23 @@ const schemas = {
         "any.required": `'${keyName}' é um campo obrigatório.`,
         "string.empty": `'${keyName}' não pode estar em branco.`,
         "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
+        "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
+        "any.invalid": `'${keyName}' não pode ser 'null'.`,
+      });
+  },
+
+  STRING_INTEGER: (keyName, options) => {
+    return Joi.string()
+      .pattern(/^[0-9]*$/)
+      .min(options.min || 1)
+      .max(options.max || 255)
+      .trim()
+      .messages({
+        "any.required": `'${keyName}' é um campo obrigatório.`,
+        "string.empty": `'${keyName}' não pode estar em branco.`,
+        "string.base": `'${keyName}' deve ser do tipo String.`,
+        "string.pattern.base": `'${keyName}' deve ser um número e não deve ter casas decimais.`,
         "string.min": `'${keyName}' deve conter no mínimo {#limit} caracteres.`,
         "string.max": `'${keyName}' deve conter no máximo {#limit} caracteres.`,
         "any.invalid": `'${keyName}' não pode ser 'null'.`,

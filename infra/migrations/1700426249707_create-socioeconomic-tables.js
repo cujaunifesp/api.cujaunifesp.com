@@ -23,6 +23,15 @@ exports.up = (pgm) => {
       default: 0,
     },
 
+    description: {
+      type: "varchar(510)",
+    },
+
+    type: {
+      type: "varchar(50)",
+      notNull: true,
+    },
+
     selection_id: {
       type: "uuid",
       references: "selections",
@@ -43,11 +52,6 @@ exports.up = (pgm) => {
 
     label: {
       type: "varchar(255)",
-      notNull: true,
-    },
-
-    type: {
-      type: "varchar(32)",
       notNull: true,
     },
 
@@ -76,14 +80,14 @@ exports.up = (pgm) => {
     },
 
     value: {
-      type: "varchar(255)",
+      type: "varchar(510)",
       notNull: true,
     },
 
-    socioeconomic_question_option_id: {
+    socioeconomic_question_id: {
       type: "uuid",
-      references: "socioeconomic_questions_options",
-      onDelete: "CASCADE",
+      references: "socioeconomic_questions",
+      onDelete: "NO ACTION",
       onUpdate: "CASCADE",
       notNull: true,
     },

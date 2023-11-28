@@ -7,12 +7,13 @@ async function findQuestionsBySelectionId(id) {
         questions.id,
         questions.number,
         questions.text,
+        questions.description,
+        questions.type,
         COALESCE(
           JSONB_AGG(
             JSONB_BUILD_OBJECT(
               'id', questions_options.id, 
               'label', questions_options.label,
-              'type', questions_options.type,
               'number', questions_options.number
             ) 
             ORDER BY questions_options.number ASC
@@ -39,7 +40,7 @@ async function findQuestionsBySelectionId(id) {
 async function createSocioeconmicAnswers(answersArray) {
   const answersValues = answersArray.map((answer) => [
     answer.value,
-    answer.socioeconomic_question_option_id,
+    answer.socioeconomic_question_id,
     answer.application_id,
   ]);
 
@@ -49,7 +50,7 @@ async function createSocioeconmicAnswers(answersArray) {
         socioeconomic_answers 
         (
           value,
-          socioeconomic_question_option_id,
+          socioeconomic_question_id,
           application_id
         )
         VALUES
@@ -65,50 +66,41 @@ async function createSocioeconmicAnswers(answersArray) {
   return results.rows;
 }
 
-async function findQuestionOptionSelectionByOptionId(optionId) {
-  const results = await database.query({
-    text: `
-      SELECT 
-        selections.id AS selection_id,
-        selections.title AS selection_title,
-        questions.id AS question_id,
-        questions.text AS question_text,
-        options.id AS option_id,
-        options.label AS option_label
-      FROM
-        socioeconomic_questions_options options
-      LEFT JOIN
-        socioeconomic_questions questions ON options.socioeconomic_question_id = questions.id
-      LEFT JOIN
-        selections ON questions.selection_id = selections.id
-      WHERE
-        options.id = $1;
-    `,
-    values: [optionId],
-  });
-
-  return results.rows[0];
-}
-
-async function countApplicationAnswersByQuestionOptionId(optionId) {
+async function countApplicationAnswersByQuestionId(questionId) {
   const results = await database.query({
     text: `
       SELECT
-        count(socioeconomic_answers.id) AS answers_count
+        count(socioeconomic_answers) AS answers_count
       FROM 
         socioeconomic_answers
       WHERE
-        socioeconomic_answers.socioeconomic_question_option_id = $1;
+        socioeconomic_answers.socioeconomic_question_id = $1;
     `,
-    values: [optionId],
+    values: [questionId],
   });
 
   return results.rows[0].answers_count;
 }
 
+async function findQuestionById(questionId) {
+  const results = await database.query({
+    text: `
+      SELECT 
+        *
+      FROM
+        socioeconomic_questions
+      WHERE
+        id = $1;
+    `,
+    values: [questionId],
+  });
+
+  return results.rows[0];
+}
+
 export default Object.freeze({
   findQuestionsBySelectionId,
   createSocioeconmicAnswers,
-  findQuestionOptionSelectionByOptionId,
-  countApplicationAnswersByQuestionOptionId,
+  countApplicationAnswersByQuestionId,
+  findQuestionById,
 });
