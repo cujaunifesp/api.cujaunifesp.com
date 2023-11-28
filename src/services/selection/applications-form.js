@@ -61,14 +61,10 @@ async function createApplicationOrder(applicationToPay) {
     applicationToPay.selection_id,
   );
 
-  const now = new Date();
-  const in3days = new Date(now);
-  in3days.setDate(now.getDate() + 3);
-
   const createdOrder = await ordersControlService.startOrderForUpcomingPayment({
     description: "Taxa de inscrição no processo seletivo do CUJA",
-    amount: selectionFromApplication.applications_price,
-    expires_at: in3days.toISOString(),
+    amount: selectionFromApplication.application_price,
+    expires_at: selectionFromApplication.applications_end_date.toISOString(),
   });
 
   await assignOrderToApplication({
