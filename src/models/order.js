@@ -6,13 +6,14 @@ async function create(orderToCreate) {
       INSERT INTO
         orders 
           ( 
-            description, amount, expires_at
+            title, description, amount, expires_at
           )
         VALUES
-          ($1, $2, $3)
+          ($1, $2, $3, $4)
       RETURNING *;
     `,
     values: [
+      orderToCreate.title,
       orderToCreate.description,
       orderToCreate.amount,
       orderToCreate.expires_at,
@@ -100,9 +101,10 @@ async function updatePaymentStatus(paymentToUpdate) {
         total_paid_amount = $1, 
         status = $2, 
         approved_at = $3, 
-        updated_at = $4
+        updated_at = $4,
+        payer_email = $5
       WHERE
-        orders_payments.id = $5
+        orders_payments.id = $6
       RETURNING *
       ;
     `,
@@ -111,6 +113,7 @@ async function updatePaymentStatus(paymentToUpdate) {
       paymentToUpdate.status,
       paymentToUpdate.approved_at,
       paymentToUpdate.updated_at,
+      paymentToUpdate.payer_email,
       paymentToUpdate.id,
     ],
   });

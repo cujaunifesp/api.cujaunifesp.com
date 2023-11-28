@@ -1,6 +1,7 @@
 import { faker, simpleFaker } from "@faker-js/faker";
 
 import database from "infra/database";
+import application from "src/models/application";
 import applicationsFormService from "src/services/selection/applications-form";
 import selectionQueryService from "src/services/selection/selection-query";
 
@@ -20,14 +21,15 @@ async function createNewSelection(selectionObject) {
       selectionObject?.applications_end_date?.toISOString() ||
       now.toISOString(),
     published_at: selectionObject?.published_at || null,
+    application_price: selectionObject?.application_price || 0,
   };
 
   const results = await database.query({
     text: `
       INSERT INTO
-        selections (title, description, exam_date, applications_start_date, applications_end_date, published_at)
+        selections (title, description, exam_date, applications_start_date, applications_end_date, published_at, application_price)
       VALUES
-        ($1, $2, $3, $4, $5, $6)
+        ($1, $2, $3, $4, $5, $6, $7)
       RETURNING
         *
       ;`,
@@ -38,6 +40,7 @@ async function createNewSelection(selectionObject) {
       selection.applications_start_date,
       selection.applications_end_date,
       selection.published_at,
+      selection.application_price,
     ],
   });
 
@@ -182,6 +185,15 @@ async function getApplicationOrders(applicationId) {
   return findedOrders;
 }
 
+async function createApplicationOrder(applicationId) {
+  const applicationToCreateOrder = await application.findById(applicationId);
+  const createdOrder = await applicationsFormService.createApplicationOrder(
+    applicationToCreateOrder,
+  );
+
+  return createdOrder;
+}
+
 export default Object.freeze({
   createNewSelection,
   createNewSelectionStep,
@@ -191,4 +203,5 @@ export default Object.freeze({
   createNewApplication,
   closeSelectionApplications,
   getApplicationOrders,
+  createApplicationOrder,
 });

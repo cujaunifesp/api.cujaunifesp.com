@@ -21,7 +21,7 @@ async function submitSocioeconomicAnswersForApplication({
   for (let index = 0; index < answersToSave.length; index++) {
     const answer = answersToSave[index];
 
-    await throwIfAnswerDuplicates(answer);
+    await throwIfAnswerDuplicates(answer, answererApplication.id);
     await throwIfSelectionAnsweredMismatchApplication({
       applicationToCheck: answererApplication,
       answerToCheck: answer,
@@ -70,9 +70,10 @@ async function throwIfSelectionAnsweredMismatchApplication({
   }
 }
 
-async function throwIfAnswerDuplicates(answer) {
+async function throwIfAnswerDuplicates(answer, applicationId) {
   const answersCount = await socioeconomic.countApplicationAnswersByQuestionId(
     answer.socioeconomic_question_id,
+    applicationId,
   );
 
   if (answersCount > 0) {

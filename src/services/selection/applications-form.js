@@ -65,6 +65,7 @@ async function createApplicationOrder(applicationToPay) {
     description: "Taxa de inscrição no processo seletivo do CUJA",
     amount: selectionFromApplication.application_price,
     expires_at: selectionFromApplication.applications_end_date.toISOString(),
+    title: "Inscrição CUJA",
   });
 
   await assignOrderToApplication({

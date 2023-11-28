@@ -12,6 +12,10 @@ exports.up = (pgm) => {
       unique: true,
     },
 
+    title: {
+      type: "varchar(255)",
+    },
+
     description: {
       type: "varchar(255)",
     },
@@ -42,12 +46,11 @@ exports.up = (pgm) => {
     },
 
     mercado_pago_id: {
-      type: "integer",
+      type: "bigint",
     },
 
     payer_email: {
       type: "varchar(255)",
-      notNull: true,
     },
 
     payment_method_id: {
