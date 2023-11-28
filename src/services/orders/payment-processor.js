@@ -57,7 +57,7 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     token: paymentDetails.token,
     issuer_id: paymentDetails.issuer_id,
     external_reference: uuid(),
-    notificationUrl: getPaymentNotificationUrl(),
+    notification_url: getPaymentNotificationUrl(),
   };
 
   const paidPayment = await pay(paymentToPay);
