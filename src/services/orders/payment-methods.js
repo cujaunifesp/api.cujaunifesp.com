@@ -27,6 +27,7 @@ async function getAvailablePaymentMethods() {
           paymentMethodsAdditionalFees[method.id] || 0,
         min_allowed_amount: method.min_allowed_amount,
         max_allowed_amount: method.max_allowed_amount,
+        thumbnail: method.secure_thumbnail,
       };
     });
 
