@@ -5,7 +5,7 @@ import validator from "utils/validator";
 
 const applicationValidationKeys = {
   name: { required: true, type: validator.types.STRING_TRIM },
-  social_name: { type: validator.types.STRING_TRIM },
+  social_name: { type: validator.types.STRING_TRIM, allowNull: true },
   email: { required: true, type: validator.types.EMAIL },
   phone: { required: true, max: 50, type: validator.types.STRING_TRIM },
   cpf: { required: true, type: validator.types.STRING_CPF },
@@ -20,7 +20,11 @@ const applicationValidationKeys = {
   state: { required: true, max: 64, type: validator.types.STRING_TRIM },
   sabbatarian: { required: true, type: validator.types.BOOLEAN },
   special_assistance: { required: true, type: validator.types.BOOLEAN },
-  special_assistance_justification: { max: 510, type: validator.types.STRING },
+  special_assistance_justification: {
+    max: 510,
+    type: validator.types.STRING,
+    allowNull: true,
+  },
   selected_groups_ids: { type: validator.types.ARRAY },
   selection_id: { required: true, type: validator.types.UUID },
 };
