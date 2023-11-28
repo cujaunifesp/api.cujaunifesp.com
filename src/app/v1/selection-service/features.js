@@ -119,4 +119,9 @@ export default Object.freeze({
     allowUnauthenticated: true,
     verifier: (session, resource) => true,
   },
+
+  "GET:PAYMENTS_METHODS": {
+    allowUnauthenticated: true,
+    verifier: (session, resource) => true,
+  },
 });
