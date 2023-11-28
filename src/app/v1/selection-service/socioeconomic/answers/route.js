@@ -17,7 +17,7 @@ export async function POST(request) {
         type: validator.types.ARRAY_OF_OBJECTS,
         objectSchema: {
           value: validator.types.STRING_TRIM,
-          socioeconomic_question_option_id: validator.types.UUID,
+          socioeconomic_question_id: validator.types.UUID,
         },
       },
     });

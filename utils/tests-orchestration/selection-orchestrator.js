@@ -100,9 +100,9 @@ async function createNewSocioeconomicQuestion(question) {
   const results = await database.query({
     text: `
       INSERT INTO
-        socioeconomic_questions (text, selection_id, number)
+        socioeconomic_questions (text, selection_id, number, type)
       VALUES
-        ($1, $2, $3)
+        ($1, $2, $3, $4)
       RETURNING
         *
       ;`,
@@ -110,6 +110,7 @@ async function createNewSocioeconomicQuestion(question) {
       question.text || "Qual é a sua resposta?",
       question.selection_id,
       question.number || null,
+      question.type || "string",
     ],
   });
 
@@ -122,15 +123,14 @@ async function createNewSocioeconomicQuestionOption(questionOption) {
   const results = await database.query({
     text: `
       INSERT INTO
-        socioeconomic_questions_options (label, type, socioeconomic_question_id, number)
+        socioeconomic_questions_options (label, socioeconomic_question_id, number)
       VALUES
-        ($1, $2, $3, $4)
+        ($1, $2, $3)
       RETURNING
         *
       ;`,
     values: [
       questionOption.label || "Resposta letra A",
-      questionOption.type || "multiple_choice",
       questionOption.socioeconomic_question_id,
       questionOption.number || null,
     ],

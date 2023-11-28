@@ -118,7 +118,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
             answers: [
               {
                 value: "R$12.000",
-                socioeconomic_question_option_id:
+                socioeconomic_question_id:
                   "fb17530b-e8fc-4ca1-a57e-3e3608b87d09",
               },
             ],
@@ -139,27 +139,18 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
     });
   });
 
-  describe("Usuário autenticado 'bem intencionado e instruído'", () => {
-    const userTestingData = {
-      selection: [],
-      group: [],
-      application: [],
-      question: [],
-      options: [],
-    };
-
-    test("com apenas uma resposta", async () => {
+  describe("Usuário autenticado mal intencionado", () => {
+    test("com application de outro usuário", async () => {
       const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
-        email: "user@teste.com",
-        role: "visitor",
+        email: "user1@teste.com",
       });
 
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
       const createdSelection = await orchestrator.selection.createNewSelection({
-        title: "Processo Seletivo de Exemplo",
+        title: "Processo Seletivo",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
@@ -173,185 +164,12 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
         },
       );
 
-      const createdQuestion =
+      const createdQuestionInputText =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta",
+          text: "Essa é uma pergunta de texto",
+          type: "text",
           number: 1,
           selection_id: createdSelection.id,
-        });
-
-      const createdOption =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
-          number: 1,
-          socioeconomic_question_id: createdQuestion.id,
-        });
-
-      const createdApplication =
-        await orchestrator.selection.createNewApplication({
-          email: "user@teste.com",
-          selection_id: createdSelection.id,
-          selected_groups_ids: [createdGroup.id],
-        });
-
-      userTestingData.selection.push(createdSelection);
-      userTestingData.group.push(createdGroup);
-      userTestingData.application.push(createdApplication);
-      userTestingData.question.push(createdQuestion);
-      userTestingData.options.push(createdOption);
-      userTestingData.token = userToken;
-
-      const response = await fetch(
-        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${userToken}` },
-          body: JSON.stringify({
-            application_id: createdApplication.id,
-            answers: [
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption.id,
-              },
-            ],
-          }),
-        },
-      );
-
-      const responseBody = await response.json();
-
-      expect(response.status).toEqual(201);
-      expect(responseBody.length).toEqual(1);
-      expect(responseBody[0]).toEqual({
-        id: responseBody[0].id,
-        value: "Alternativa A",
-        socioeconomic_question_option_id: createdOption.id,
-        application_id: createdApplication.id,
-        created_at: responseBody[0].created_at,
-      });
-    });
-
-    test("com mais de uma resposta", async () => {
-      const date = new Date();
-      date.setDate(date.getDate() + 2);
-
-      const createdQuestion1 =
-        await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é a pergunta 2[1]",
-          number: 2,
-          selection_id: userTestingData.selection[0].id,
-        });
-
-      const createdQuestion2 =
-        await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é a pergunta 3[2]",
-          number: 2,
-          selection_id: userTestingData.selection[0].id,
-        });
-
-      const createdOption1 =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
-          number: 1,
-          socioeconomic_question_id: createdQuestion1.id,
-        });
-
-      const createdOption2 =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
-          number: 1,
-          socioeconomic_question_id: createdQuestion2.id,
-        });
-
-      const response = await fetch(
-        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
-          body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
-            answers: [
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption1.id,
-              },
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption2.id,
-              },
-            ],
-          }),
-        },
-      );
-
-      const responseBody = await response.json();
-
-      expect(response.status).toEqual(201);
-      expect(responseBody.length).toEqual(2);
-      expect(responseBody[0]).toEqual({
-        id: responseBody[0].id,
-        value: "Alternativa A",
-        socioeconomic_question_option_id: createdOption1.id,
-        application_id: userTestingData.application[0].id,
-        created_at: responseBody[0].created_at,
-      });
-
-      expect(responseBody[1]).toEqual({
-        id: responseBody[1].id,
-        value: "Alternativa A",
-        socioeconomic_question_option_id: createdOption2.id,
-        application_id: userTestingData.application[0].id,
-        created_at: responseBody[1].created_at,
-      });
-    });
-  });
-
-  describe("Usuário autenticado 'mal intencionado'", () => {
-    const userTestingData = {
-      selection: [],
-      group: [],
-      application: [],
-      question: [],
-      options: [],
-    };
-
-    test("com inscrição de outra pessoa", async () => {
-      const userToken = orchestrator.auth.createUserToken({
-        method: "email_verification",
-        email: "user2@teste.com",
-        role: "visitor",
-      });
-
-      const date = new Date();
-      date.setDate(date.getDate() + 2);
-
-      const createdSelection = await orchestrator.selection.createNewSelection({
-        title: "Processo Seletivo de Exemplo 2",
-        published_at: new Date(),
-        applications_start_date: new Date(),
-        applications_end_date: date,
-      });
-
-      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
-        {
-          title: "Reserva de Vagas - PPI",
-          code: "T1",
-          selection_id: createdSelection.id,
-        },
-      );
-
-      const createdQuestion =
-        await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta",
-          number: 1,
-          selection_id: createdSelection.id,
-        });
-
-      const createdOption =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
-          number: 1,
-          socioeconomic_question_id: createdQuestion.id,
         });
 
       const createdApplication =
@@ -370,8 +188,8 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
             application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption.id,
+                value: "Essa é uma resposta de texto",
+                socioeconomic_question_id: createdQuestionInputText.id,
               },
             ],
           }),
@@ -387,26 +205,19 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
         name: "ForbiddenError",
         statusCode: 403,
       });
-
-      userTestingData.selection[0] = createdSelection;
-      userTestingData.group[0] = createdGroup;
-      userTestingData.question[0] = createdQuestion;
-      userTestingData.options[0] = createdOption;
-      userTestingData.token = userToken;
     });
 
-    test("com processo seletivo sem inscrições abertas", async () => {
+    test("em processo seletivo com as inscrições fechadas", async () => {
       const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
-        email: "user2@teste.com",
-        role: "visitor",
+        email: "user1@teste.com",
       });
 
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
       const createdSelection = await orchestrator.selection.createNewSelection({
-        title: "Processo Seletivo Fechado",
+        title: "Processo Seletivo",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
@@ -414,29 +225,23 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const createdGroup = await orchestrator.selection.createNewSelectionGroup(
         {
-          title: "Um grupo qualquer",
-          code: "T?",
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
           selection_id: createdSelection.id,
         },
       );
 
-      const createdQuestion =
+      const createdQuestionInputText =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta",
+          text: "Essa é uma pergunta de texto",
+          type: "text",
           number: 1,
           selection_id: createdSelection.id,
         });
 
-      const createdOption =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
-          number: 1,
-          socioeconomic_question_id: createdQuestion.id,
-        });
-
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user2@teste.com",
+          email: "user1@teste.com",
           selection_id: createdSelection.id,
           selected_groups_ids: [createdGroup.id],
         });
@@ -454,8 +259,8 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
             application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption.id,
+                value: "Essa é uma resposta de texto",
+                socioeconomic_question_id: createdQuestionInputText.id,
               },
             ],
           }),
@@ -473,35 +278,60 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       });
     });
 
-    test("com respostas duplicadas", async () => {
+    test("com duas respostas para a mesma questão", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdApplication =
-        await orchestrator.selection.createNewApplication({
-          email: "user2@teste.com",
-          selection_id: userTestingData.selection[0].id,
-          selected_groups_ids: [userTestingData.group[0].id],
-          cpf: "111.111.111-11",
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdQuestionInputText =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de texto",
+          type: "text",
+          number: 1,
+          selection_id: createdSelection.id,
         });
 
-      userTestingData.application.push(createdApplication);
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
+          headers: { Authorization: `Bearer ${userToken}` },
           body: JSON.stringify({
             application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
+                value: "Essa é uma resposta de texto",
+                socioeconomic_question_id: createdQuestionInputText.id,
               },
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
+                value: "Essa é a outra resposta para a mesma pergunta",
+                socioeconomic_question_id: createdQuestionInputText.id,
               },
             ],
           }),
@@ -519,43 +349,73 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       });
     });
 
-    test("respondendo uma questão inexistente", async () => {
+    test("respondendo questão de outro processo seletivo", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
-      const createdQuestion =
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdSelection2 = await orchestrator.selection.createNewSelection(
+        {
+          title: "Processo Seletivo",
+          published_at: new Date(),
+          applications_start_date: new Date(),
+          applications_end_date: date,
+        },
+      );
+
+      const createdQuestionInputText2 =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta nova",
+          text: "Essa é uma pergunta de texto do segundo processo seletivo",
+          type: "text",
           number: 1,
-          selection_id: userTestingData.selection[0].id,
+          selection_id: createdSelection2.id,
         });
 
-      const createdOption =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Alternativa A",
+      const createdQuestionInputText =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de texto",
+          type: "text",
           number: 1,
-          socioeconomic_question_id: createdQuestion.id,
+          selection_id: createdSelection.id,
         });
 
-      userTestingData.question.push(createdQuestion);
-      userTestingData.options.push(createdOption);
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
+          headers: { Authorization: `Bearer ${userToken}` },
           body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
+            application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
-              },
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id:
-                  "03b16fbc-df8d-4a4d-9071-41c2a47fa001",
+                value: "Essa é uma resposta de texto",
+                socioeconomic_question_id: createdQuestionInputText2.id,
               },
             ],
           }),
@@ -574,20 +434,120 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       });
     });
 
-    test("respondendo uma questão de outro processo seletivo", async () => {
+    test("respondendo questão já respondida", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
       const date = new Date();
       date.setDate(date.getDate() + 2);
 
       const createdSelection = await orchestrator.selection.createNewSelection({
-        title: "Processo Seletivo do espertinho",
+        title: "Processo Seletivo",
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: date,
       });
 
-      const createdQuestion =
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdQuestionInputText =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta de outro processo seletivo",
+          text: "Essa é uma pergunta de texto",
+          type: "text",
+          number: 1,
+          selection_id: createdSelection.id,
+        });
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
+
+      await fetch(
+        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+          body: JSON.stringify({
+            application_id: createdApplication.id,
+            answers: [
+              {
+                value: "Essa é uma resposta de texto pela primeira vez",
+                socioeconomic_question_id: createdQuestionInputText.id,
+              },
+            ],
+          }),
+        },
+      );
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+          body: JSON.stringify({
+            application_id: createdApplication.id,
+            answers: [
+              {
+                value: "Essa é uma resposta de texto pela segunda vez",
+                socioeconomic_question_id: createdQuestionInputText.id,
+              },
+            ],
+          }),
+        },
+      );
+
+      const responseBody = await response.json();
+
+      expect(response.status).toEqual(422);
+      expect(responseBody.error).toEqual({
+        message:
+          "Você está tentando responder uma questão que você já respondeu antes.",
+        action:
+          "Entre em contato com o suporte se acreditar que isso é um erro.",
+        name: "ValidationError",
+        statusCode: 422,
+      });
+    });
+
+    test("respondendo uma questão de multiple_choice com texto simples", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdQuestionMultipleChoice =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de multipla escolha",
+          type: "multiple_choice",
           number: 1,
           selection_id: createdSelection.id,
         });
@@ -596,20 +556,34 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "Alternativa A",
           number: 1,
-          socioeconomic_question_id: createdQuestion.id,
+          socioeconomic_question_id: createdQuestionMultipleChoice.id,
+        });
+
+      const createdOption2 =
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
+          label: "Alternativa B",
+          number: 2,
+          socioeconomic_question_id: createdQuestionMultipleChoice.id,
+        });
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
         });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
+          headers: { Authorization: `Bearer ${userToken}` },
           body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
+            application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: createdOption.id,
+                value: "Respondendo com texto (tipo inválido)",
+                socioeconomic_question_id: createdQuestionMultipleChoice.id,
               },
             ],
           }),
@@ -618,45 +592,65 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const responseBody = await response.json();
 
-      expect(response.status).toEqual(422);
+      expect(response.status).toEqual(400);
       expect(responseBody.error).toEqual({
-        message:
-          "A questão que você está tentando responder não corresponte ao processo seletivo de sua inscrição.",
-        action: "Responda apenas o formulário referente a sua inscrição.",
+        message: "'answerValue' deve possuir um token UUID na versão 4.",
+        action: "Corrija os dados enviados e tente novamente.",
         name: "ValidationError",
-        statusCode: 422,
+        statusCode: 400,
       });
     });
 
-    test("respondendo uma questão que ele já respondeu antes", async () => {
-      await fetch(
-        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
+    test("respondendo uma questão de number com texto sem número", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
         {
-          method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
-          body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
-            answers: [
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
-              },
-            ],
-          }),
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
         },
       );
+
+      const createdQuestionInputNumber =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de number",
+          type: "number",
+          number: 1,
+          selection_id: createdSelection.id,
+        });
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
+          headers: { Authorization: `Bearer ${userToken}` },
           body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
+            application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
+                value: "Respondendo com texto (tipo inválido)",
+                socioeconomic_question_id: createdQuestionInputNumber.id,
               },
             ],
           }),
@@ -665,50 +659,81 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const responseBody = await response.json();
 
-      expect(response.status).toEqual(422);
+      expect(response.status).toEqual(400);
       expect(responseBody.error).toEqual({
         message:
-          "Você está tentando responder uma questão que você já respondeu antes.",
-        action:
-          "Entre em contato com o suporte se acreditar que isso é um erro.",
+          "'answerValue' deve ser um número e não deve ter casas decimais.",
+        action: "Corrija os dados enviados e tente novamente.",
         name: "ValidationError",
-        statusCode: 422,
+        statusCode: 400,
       });
     });
 
-    test("respondendo 2 questões (com uma delas já respondida antes)", async () => {
-      await fetch(
-        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
+    test("respondendo uma questão de text com um id de opção", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
         {
-          method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
-          body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
-            answers: [
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
-              },
-              {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[1].id,
-              },
-            ],
-          }),
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
         },
       );
+
+      const createdQuestionInputText =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de multipla escolha",
+          type: "text",
+          number: 1,
+          selection_id: createdSelection.id,
+        });
+
+      //Estamos criando opções de forma errada para uma questão type "text" para forçar teste
+      const createdOption =
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
+          label: "Alternativa A",
+          number: 1,
+          socioeconomic_question_id: createdQuestionInputText.id,
+        });
+
+      const createdOption2 =
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
+          label: "Alternativa B",
+          number: 2,
+          socioeconomic_question_id: createdQuestionInputText.id,
+        });
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
 
       const response = await fetch(
         `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
         {
           method: "POST",
-          headers: { Authorization: `Bearer ${userTestingData.token}` },
+          headers: { Authorization: `Bearer ${userToken}` },
           body: JSON.stringify({
-            application_id: userTestingData.application[0].id,
+            application_id: createdApplication.id,
             answers: [
               {
-                value: "Alternativa A",
-                socioeconomic_question_option_id: userTestingData.options[0].id,
+                value: createdOption.id,
+                socioeconomic_question_id: createdQuestionInputText.id,
               },
             ],
           }),
@@ -717,15 +742,137 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const responseBody = await response.json();
 
-      expect(response.status).toEqual(422);
+      expect(response.status).toEqual(400);
       expect(responseBody.error).toEqual({
-        message:
-          "Você está tentando responder uma questão que você já respondeu antes.",
-        action:
-          "Entre em contato com o suporte se acreditar que isso é um erro.",
+        message: "'answerValue' não pode ser do tipo UUID.",
+        action: "Corrija os dados enviados e tente novamente.",
         name: "ValidationError",
-        statusCode: 422,
+        statusCode: 400,
       });
+    });
+  });
+
+  describe("Usuário autenticado bem intencionado", () => {
+    test("respondendo 3 perguntas de forma correta", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        email: "user1@teste.com",
+      });
+
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        title: "Processo Seletivo",
+        published_at: new Date(),
+        applications_start_date: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup = await orchestrator.selection.createNewSelectionGroup(
+        {
+          title: "Reserva de Vagas - PPI",
+          code: "T1",
+          selection_id: createdSelection.id,
+        },
+      );
+
+      const createdQuestionMultipleChoice =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de multipla escolha",
+          type: "multiple_choice",
+          number: 1,
+          selection_id: createdSelection.id,
+        });
+
+      const createdQuestionInputText =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de multipla escolha",
+          type: "text",
+          number: 2,
+          selection_id: createdSelection.id,
+        });
+
+      const createdQuestionInputNumber =
+        await orchestrator.selection.createNewSocioeconomicQuestion({
+          text: "Essa é uma pergunta de multipla escolha",
+          type: "number",
+          number: 3,
+          selection_id: createdSelection.id,
+        });
+
+      const createdOption =
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
+          label: "Alternativa A",
+          number: 1,
+          socioeconomic_question_id: createdQuestionMultipleChoice.id,
+        });
+
+      const createdOption2 =
+        await orchestrator.selection.createNewSocioeconomicQuestionOption({
+          label: "Alternativa B",
+          number: 2,
+          socioeconomic_question_id: createdQuestionMultipleChoice.id,
+        });
+
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: createdSelection.id,
+          selected_groups_ids: [createdGroup.id],
+        });
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/socioeconomic/answers`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+          body: JSON.stringify({
+            application_id: createdApplication.id,
+            answers: [
+              {
+                value: createdOption.id,
+                socioeconomic_question_id: createdQuestionMultipleChoice.id,
+              },
+              {
+                value: "254",
+                socioeconomic_question_id: createdQuestionInputNumber.id,
+              },
+              {
+                value: "Resposta em texto",
+                socioeconomic_question_id: createdQuestionInputText.id,
+              },
+            ],
+          }),
+        },
+      );
+
+      const responseBody = await response.json();
+
+      expect(response.status).toEqual(201);
+      expect(responseBody).toEqual([
+        {
+          application_id: createdApplication.id,
+          created_at: responseBody[0].created_at,
+          id: responseBody[0].id,
+          socioeconomic_question_id: createdQuestionMultipleChoice.id,
+          value: createdOption.id,
+        },
+        {
+          application_id: createdApplication.id,
+          created_at: responseBody[1].created_at,
+          id: responseBody[1].id,
+          socioeconomic_question_id: createdQuestionInputNumber.id,
+          value: "254",
+        },
+        {
+          application_id: createdApplication.id,
+          created_at: responseBody[2].created_at,
+          id: responseBody[2].id,
+          socioeconomic_question_id: createdQuestionInputText.id,
+          value: "Resposta em texto",
+        },
+      ]);
     });
   });
 });

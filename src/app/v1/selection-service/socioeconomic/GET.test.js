@@ -78,13 +78,13 @@ describe("GET /v1/selection-service/socioeconomic", () => {
         await orchestrator.selection.createNewSocioeconomicQuestion({
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
+          type: "multiple_choice",
           number: 1,
         });
 
       const createdOptionA =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "A",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 1,
         });
@@ -92,7 +92,6 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       const createdOptionB =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "B",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 2,
         });
@@ -100,7 +99,6 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       const createdOptionC =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "C",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 3,
         });
@@ -121,7 +119,9 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       expect(responseBody[0]).toEqual({
         id: createdQuestion.id,
         text: createdQuestion.text,
+        description: createdQuestion.description,
         number: createdQuestion.number,
+        type: createdQuestion.type,
         options: [
           { ...createdOptionA, socioeconomic_question_id: undefined },
           { ...createdOptionB, socioeconomic_question_id: undefined },
@@ -130,7 +130,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       });
     });
 
-    test("com 2 perguntas do mesmo processo seletivo", async () => {
+    test("com 2 perguntas do mesmo processo seletivo (uma de texto)", async () => {
       const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
         email: "teste@teste.com",
@@ -146,6 +146,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
           number: 1,
+          type: "multiple_choice",
         });
 
       const createdQuestion2 =
@@ -153,12 +154,12 @@ describe("GET /v1/selection-service/socioeconomic", () => {
           text: "Qual é a resposta correta?",
           selection_id: createdSelection.id,
           number: 2,
+          type: "text",
         });
 
       const createdOptionA =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "A",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 1,
         });
@@ -166,7 +167,6 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       const createdOptionB =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "B",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 2,
         });
@@ -174,17 +174,8 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       const createdOptionC =
         await orchestrator.selection.createNewSocioeconomicQuestionOption({
           label: "C",
-          type: "multiple_choice",
           socioeconomic_question_id: createdQuestion.id,
           number: 3,
-        });
-
-      const createdOptionInput =
-        await orchestrator.selection.createNewSocioeconomicQuestionOption({
-          label: "Digite aqui",
-          type: "number_input",
-          socioeconomic_question_id: createdQuestion2.id,
-          number: 1,
         });
 
       const response = await fetch(
@@ -204,6 +195,7 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       expect(responseBody[0].id).toEqual(createdQuestion.id);
       expect(responseBody[0].text).toEqual(createdQuestion.text);
       expect(responseBody[0].number).toEqual(createdQuestion.number);
+      expect(responseBody[0].description).toEqual(createdQuestion.description);
       expect(responseBody[0].options).toEqual([
         { ...createdOptionA, socioeconomic_question_id: undefined },
         { ...createdOptionB, socioeconomic_question_id: undefined },
@@ -213,11 +205,8 @@ describe("GET /v1/selection-service/socioeconomic", () => {
       expect(responseBody[1].id).toEqual(createdQuestion2.id);
       expect(responseBody[1].text).toEqual(createdQuestion2.text);
       expect(responseBody[1].number).toEqual(createdQuestion2.number);
-      expect(responseBody[1].options.length).toEqual(1);
-      expect(responseBody[1].options[0]).toEqual({
-        ...createdOptionInput,
-        socioeconomic_question_id: undefined,
-      });
+      expect(responseBody[1].description).toEqual(createdQuestion2.description);
+      expect(responseBody[1].options.length).toEqual(0);
     });
   });
 });
