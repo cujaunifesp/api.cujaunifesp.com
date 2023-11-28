@@ -5,6 +5,7 @@ async function startOrderForUpcomingPayment(orderToCreate) {
     description: orderToCreate.description || null,
     amount: orderToCreate.amount || 0,
     expires_at: orderToCreate.expires_at,
+    title: orderToCreate.title,
   });
 
   return createdOrder;

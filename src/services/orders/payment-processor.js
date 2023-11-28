@@ -58,6 +58,16 @@ async function startPaymentOrder({ orderToPayId, paymentDetails }) {
     issuer_id: paymentDetails.issuer_id,
     external_reference: uuid(),
     notification_url: getPaymentNotificationUrl(),
+    description: orderToPay.description,
+    additional_info: {
+      items: [
+        {
+          title: orderToPay.title,
+          quantity: 1,
+          unit_price: transactionAmount.toNumber(),
+        },
+      ],
+    },
   };
 
   const paidPayment = await pay(paymentToPay);
@@ -170,6 +180,7 @@ async function requestPaymentStatusUpdate(paymentToUpdateMpId) {
 
   const paymentToUpdate = {
     id: response.external_reference,
+    payer_email: response.payer.email,
     total_paid_amount: response.transaction_details.total_paid_amount,
     updated_at: response.date_last_updated,
     approved_at: response.date_approved,

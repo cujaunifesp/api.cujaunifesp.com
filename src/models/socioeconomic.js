@@ -66,7 +66,7 @@ async function createSocioeconmicAnswers(answersArray) {
   return results.rows;
 }
 
-async function countApplicationAnswersByQuestionId(questionId) {
+async function countApplicationAnswersByQuestionId(questionId, applicationId) {
   const results = await database.query({
     text: `
       SELECT
@@ -74,9 +74,10 @@ async function countApplicationAnswersByQuestionId(questionId) {
       FROM 
         socioeconomic_answers
       WHERE
-        socioeconomic_answers.socioeconomic_question_id = $1;
+        socioeconomic_answers.socioeconomic_question_id = $1
+        AND socioeconomic_answers.application_id = $2;
     `,
-    values: [questionId],
+    values: [questionId, applicationId],
   });
 
   return results.rows[0].answers_count;

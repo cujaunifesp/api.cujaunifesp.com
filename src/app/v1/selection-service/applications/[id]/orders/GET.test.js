@@ -92,6 +92,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         published_at: new Date(),
         applications_start_date: new Date(),
         applications_end_date: endDate,
+        application_price: 35,
       });
 
       const createdGroup = await orchestrator.selection.createNewSelectionGroup(
@@ -147,7 +148,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
   });
 
   describe("Usuário autenticado bem intencionado", () => {
-    test("com application_id válido", async () => {
+    test("com application_id válido, 1 pedido e nenhum pagamento", async () => {
       const createdApplication =
         await orchestrator.selection.createNewApplication({
           email: "user1@teste.com",
@@ -179,6 +180,245 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         id: responseBody[0].id,
         status: "waiting",
         amount: responseBody[0].amount,
+        title: "Inscrição CUJA",
+      });
+    });
+
+    test("com application_id válido, 1 pedido e 1 pagamento em processamento", async () => {
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: testData.selection.id,
+          selected_groups_ids: [testData.selectionApplicationGroup.id],
+          cpf: "211.111.111-11",
+        });
+
+      const applicationOrders =
+        await orchestrator.selection.getApplicationOrders(
+          createdApplication.id,
+        );
+
+      const createdPayment = orchestrator.orders.createNewPayment({
+        order_id: applicationOrders[0].id,
+        status: "pending",
+      });
+
+      testData.user1.application = createdApplication;
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+        },
+      );
+
+      const responseBody = await response.json();
+
+      testData.user1.order1 = responseBody[0];
+
+      expect(response.status).toEqual(200);
+      expect(responseBody.length).toEqual(1);
+      expect(responseBody[0]).toEqual({
+        created_at: responseBody[0].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[0].expires_at,
+        id: responseBody[0].id,
+        status: "pending",
+        amount: responseBody[0].amount,
+        title: "Inscrição CUJA",
+      });
+    });
+
+    test("com application_id válido, 1 pedido e 1 pagamento aprovado", async () => {
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: testData.selection.id,
+          selected_groups_ids: [testData.selectionApplicationGroup.id],
+          cpf: "311.111.111-11",
+        });
+
+      const applicationOrders =
+        await orchestrator.selection.getApplicationOrders(
+          createdApplication.id,
+        );
+
+      const createdPayment = orchestrator.orders.createNewPayment({
+        order_id: applicationOrders[0].id,
+        status: "approved",
+        total_paid_amount: testData.selection.application_price,
+        transaction_amount: testData.selection.application_price,
+      });
+
+      testData.user1.application = createdApplication;
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+        },
+      );
+
+      const responseBody = await response.json();
+
+      testData.user1.order1 = responseBody[0];
+
+      expect(response.status).toEqual(200);
+      expect(responseBody.length).toEqual(1);
+      expect(responseBody[0]).toEqual({
+        created_at: responseBody[0].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[0].expires_at,
+        id: responseBody[0].id,
+        status: "paid",
+        amount: responseBody[0].amount,
+        title: "Inscrição CUJA",
+      });
+    });
+
+    test("com application_id válido, 2 pedidos", async () => {
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: testData.selection.id,
+          selected_groups_ids: [testData.selectionApplicationGroup.id],
+          cpf: "411.111.111-11",
+        });
+
+      await orchestrator.selection.createApplicationOrder(
+        createdApplication.id,
+      );
+
+      const applicationOrders =
+        await orchestrator.selection.getApplicationOrders(
+          createdApplication.id,
+        );
+
+      const createdPayment = orchestrator.orders.createNewPayment({
+        order_id: applicationOrders[0].id,
+        status: "approved",
+        total_paid_amount: testData.selection.application_price,
+        transaction_amount: testData.selection.application_price,
+      });
+
+      testData.user1.application = createdApplication;
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+        },
+      );
+
+      const responseBody = await response.json();
+
+      testData.user1.order1 = responseBody[0];
+
+      expect(response.status).toEqual(200);
+      expect(responseBody.length).toEqual(2);
+      expect(responseBody[0]).toEqual({
+        created_at: responseBody[0].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[0].expires_at,
+        id: responseBody[0].id,
+        status: "paid",
+        amount: responseBody[0].amount,
+        title: "Inscrição CUJA",
+      });
+
+      expect(responseBody[1]).toEqual({
+        created_at: responseBody[1].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[1].expires_at,
+        id: responseBody[1].id,
+        status: "waiting",
+        amount: responseBody[1].amount,
+        title: "Inscrição CUJA",
+      });
+    });
+
+    test("com application_id válido, 3 pedidos", async () => {
+      const createdApplication =
+        await orchestrator.selection.createNewApplication({
+          email: "user1@teste.com",
+          selection_id: testData.selection.id,
+          selected_groups_ids: [testData.selectionApplicationGroup.id],
+          cpf: "511.111.111-11",
+        });
+
+      await orchestrator.selection.createApplicationOrder(
+        createdApplication.id,
+      );
+
+      await orchestrator.selection.createApplicationOrder(
+        createdApplication.id,
+      );
+
+      const applicationOrders =
+        await orchestrator.selection.getApplicationOrders(
+          createdApplication.id,
+        );
+
+      await orchestrator.orders.createNewPayment({
+        order_id: applicationOrders[0].id,
+        status: "approved",
+        total_paid_amount: testData.selection.application_price,
+        transaction_amount: testData.selection.application_price,
+      });
+
+      await orchestrator.orders.createNewPayment({
+        order_id: applicationOrders[1].id,
+        status: "pending",
+        total_paid_amount: testData.selection.application_price,
+        transaction_amount: testData.selection.application_price,
+      });
+
+      testData.user1.application = createdApplication;
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+        },
+      );
+
+      const responseBody = await response.json();
+      testData.user1.order1 = responseBody[0];
+
+      expect(response.status).toEqual(200);
+      expect(responseBody.length).toEqual(3);
+      expect(responseBody[0]).toEqual({
+        created_at: responseBody[0].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[0].expires_at,
+        id: responseBody[0].id,
+        status: "paid",
+        amount: responseBody[0].amount,
+        title: "Inscrição CUJA",
+      });
+
+      expect(responseBody[1]).toEqual({
+        created_at: responseBody[1].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[1].expires_at,
+        id: responseBody[1].id,
+        status: "pending",
+        amount: responseBody[1].amount,
+        title: "Inscrição CUJA",
+      });
+
+      expect(responseBody[2]).toEqual({
+        created_at: responseBody[2].created_at,
+        description: "Taxa de inscrição no processo seletivo do CUJA",
+        expires_at: responseBody[2].expires_at,
+        id: responseBody[2].id,
+        status: "waiting",
+        amount: responseBody[2].amount,
+        title: "Inscrição CUJA",
       });
     });
   });

@@ -166,20 +166,21 @@ async function findOrdersByApplicationId(applicationId) {
           sum(orders_payments.total_paid_amount) FILTER(WHERE orders_payments.status = 'approved') 
           - sum(orders_payments.additional_payment_method_fee) FILTER(WHERE orders_payments.status = 'approved') AS paid_approved,
           count(orders_payments) FILTER(WHERE orders_payments.status IN ('in_process', 'in_mediation', 'pending', 'authorized')) AS pending_count, 
-          count(orders_payments) AS payments_count 
+          count(orders_payments) AS payments_count,
+          orders_payments.order_id
         FROM orders_payments
-        WHERE orders_payments.order_id = $1
+        GROUP BY orders_payments.order_id
       )
       SELECT 
         orders.*,
         CASE 
-          WHEN (SELECT paid_approved FROM payments) >= orders.amount THEN 'paid'
-          WHEN (SELECT paid_approved FROM payments) < orders.amount 
+          WHEN (SELECT paid_approved FROM payments WHERE order_id = orders.id) >= orders.amount THEN 'paid'
+          WHEN (SELECT paid_approved FROM payments WHERE order_id = orders.id) < orders.amount 
             AND orders.expires_at < now()
-            OR (SELECT payments_count FROM payments) = 0 
+            OR (SELECT payments_count FROM payments WHERE order_id = orders.id) = 0 
             AND orders.expires_at < now()
             THEN 'not_paid'
-          WHEN (SELECT pending_count FROM payments) > 0 THEN 'pending'
+          WHEN (SELECT pending_count FROM payments WHERE order_id = orders.id) > 0 THEN 'pending'
           ELSE 'waiting'
         END AS status
       FROM
