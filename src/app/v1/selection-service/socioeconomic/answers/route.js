@@ -67,3 +67,28 @@ export async function GET(request) {
     return controller.response.error(error);
   }
 }
+
+export async function DELETE(request) {
+  try {
+    const applicationId = request.nextUrl.searchParams.get("application_id");
+
+    const requestedApplication =
+      await controller.request.getResourceByRequestParams({
+        idParam: applicationId,
+        resourceModel: application,
+      });
+
+    await authorizator
+      .request(request.headers)
+      .can("DELETE:APPLICATIONS_ANSWERS", {
+        resource: requestedApplication,
+      });
+
+    const deletedAnswers =
+      await socioeconomicFormService.resetApplicationAnswers(applicationId);
+
+    return controller.response.ok(201, [...deletedAnswers]);
+  } catch (error) {
+    return controller.response.error(error);
+  }
+}

@@ -137,10 +137,24 @@ async function findAnswersByApplicationId(applicationId) {
   return results.rows;
 }
 
+async function deleteAnswersByApplicationId(applicationId) {
+  const results = await database.query({
+    text: `
+      DELETE FROM socioeconomic_answers
+      WHERE application_id = $1
+      RETURNING *
+    `,
+    values: [applicationId],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   findQuestionsBySelectionId,
   createSocioeconmicAnswers,
   countApplicationAnswersByQuestionId,
   findQuestionById,
   findAnswersByApplicationId,
+  deleteAnswersByApplicationId,
 });
