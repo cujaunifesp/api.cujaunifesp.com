@@ -115,6 +115,21 @@ export default Object.freeze({
     },
   },
 
+  "GET:APPLICATIONS_ANSWERS": {
+    allowUnauthenticated: false,
+    verifier: async (session, resource) => {
+      if (session.method === "root") {
+        return true;
+      }
+
+      if (resource.email === session.email) {
+        return true;
+      }
+
+      return false;
+    },
+  },
+
   "POST:ORDERS_PAYMENTS": {
     allowUnauthenticated: true,
     verifier: (session, resource) => true,

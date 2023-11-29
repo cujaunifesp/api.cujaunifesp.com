@@ -44,6 +44,12 @@ async function searchApplicationsByEmail(emailToSearch) {
   return findedApplications;
 }
 
+async function getApplicationAnswers(applicationId) {
+  const findedAnswers =
+    await socioeconomic.findAnswersByApplicationId(applicationId);
+  return findedAnswers;
+}
+
 export default Object.freeze({
   getCurrentSelection,
   getSocioeconomicQuestionsBySelectionId,
@@ -52,4 +58,5 @@ export default Object.freeze({
   getPaymentsFromApplication,
   getApplication,
   searchApplicationsByEmail,
+  getApplicationAnswers,
 });
