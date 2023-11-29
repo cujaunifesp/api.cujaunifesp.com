@@ -103,6 +103,43 @@ async function findByIdWithSelectionGroups(id) {
   return application;
 }
 
+async function findByEmailWithSelectionGroups(email) {
+  const results = await database.query({
+    text: `
+    SELECT
+        applications.*,
+        COALESCE(
+          JSONB_AGG(
+              JSONB_BUILD_OBJECT(
+                  'id', groups.id, 
+                  'title', groups.title,
+                  'code', groups.code
+              ) 
+              ORDER BY groups.code ASC
+          ) FILTER (WHERE groups.id IS NOT NULL),
+          '[]'::JSONB
+      ) AS selection_application_groups
+    FROM
+        applications
+    LEFT JOIN
+        applications_in_groups per_groups ON applications.id = per_groups.application_id
+    LEFT JOIN
+        selections_applications_groups groups ON per_groups.selection_group_id = groups.id
+    WHERE
+        applications.email = $1
+    GROUP BY
+      applications.id
+    ORDER BY
+      applications.created_at ASC;
+    `,
+    values: [email],
+  });
+
+  const application = results.rows;
+
+  return application;
+}
+
 async function countWithSelectionAndCPF({ cpf, selectionId }) {
   const results = await database.query({
     text: `
@@ -148,7 +185,8 @@ async function findByEmail(email) {
   const results = await database.query({
     text: `
       SELECT * FROM applications
-      WHERE email = $1;
+      WHERE email = $1
+      ORDER BY created_at ASC;
     `,
     values: [email],
   });
@@ -241,6 +279,7 @@ async function findPaymentsByApplicationId(applicationId) {
 export default Object.freeze({
   createApplicationsAndApplyToGroups,
   findByIdWithSelectionGroups,
+  findByEmailWithSelectionGroups,
   countWithSelectionAndCPF,
   countWithSelectionAndEmail,
   findById,

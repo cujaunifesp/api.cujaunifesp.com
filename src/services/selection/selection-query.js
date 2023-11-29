@@ -34,8 +34,15 @@ async function getSelectionApplicationsGroups(selectionId) {
 }
 
 async function getApplication(applicationId) {
-  const findedApplication = await application.findById(applicationId);
+  const findedApplication =
+    await application.findByIdWithSelectionGroups(applicationId);
   return findedApplication;
+}
+
+async function searchApplicationsByEmail(emailToSearch) {
+  const findedApplications =
+    await application.findByEmailWithSelectionGroups(emailToSearch);
+  return findedApplications;
 }
 
 export default Object.freeze({
@@ -45,4 +52,5 @@ export default Object.freeze({
   getSelectionApplicationsGroups,
   getPaymentsFromApplication,
   getApplication,
+  searchApplicationsByEmail,
 });

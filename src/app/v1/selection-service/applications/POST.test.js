@@ -137,6 +137,7 @@ describe("POST /v1/selection-service/applications", () => {
         sabbatarian: false,
         special_assistance: false,
         special_assistance_justification: null,
+        created_at: responseBody.created_at,
         selection_application_groups: [
           {
             id: createdGroup1.id,
@@ -355,6 +356,7 @@ describe("POST /v1/selection-service/applications", () => {
         sabbatarian: false,
         special_assistance: false,
         special_assistance_justification: null,
+        created_at: responseBody.created_at,
         selection_application_groups: [
           {
             id: createdGroup2.id,

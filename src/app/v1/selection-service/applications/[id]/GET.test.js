@@ -113,6 +113,14 @@ describe("GET /v1/selection-service/applications/[id]", () => {
         special_assistance: createdApplication.special_assistance,
         special_assistance_justification:
           createdApplication.special_assistance_justification,
+        created_at: createdApplication.created_at.toISOString(),
+        selection_application_groups: [
+          {
+            id: createdGroup.id,
+            title: createdGroup.title,
+            code: createdGroup.code,
+          },
+        ],
       });
     });
 
@@ -208,6 +216,14 @@ describe("GET /v1/selection-service/applications/[id]", () => {
         special_assistance: createdApplication.special_assistance,
         special_assistance_justification:
           createdApplication.special_assistance_justification,
+        created_at: createdApplication.created_at.toISOString(),
+        selection_application_groups: [
+          {
+            id: createdGroup.id,
+            title: createdGroup.title,
+            code: createdGroup.code,
+          },
+        ],
       });
     });
   });
