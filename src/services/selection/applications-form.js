@@ -1,3 +1,4 @@
+import email from "infra/email-sender/email";
 import application from "src/models/application";
 import selection from "src/models/selection";
 import ordersControlService from "src/services/orders/orders-control";
@@ -19,6 +20,13 @@ async function applyToSelection(applicationToApply) {
   );
 
   const createdOrder = await createApplicationOrder(queriedApplication);
+
+  await email.sendWithTemplate({
+    to: queriedApplication.email,
+    subject: "Acompanhe a sua inscrição",
+    template: email.templates.newApplication,
+    replacements: {},
+  });
 
   return queriedApplication;
 }
