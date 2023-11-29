@@ -156,13 +156,12 @@ describe("GET /v1/selection-service/applications/{id}/payments", () => {
           cpf: "111.111.111-11",
         });
 
-      const applicationOrders =
-        await orchestrator.selection.getApplicationOrders(
-          createdApplication.id,
-        );
+      const applicationOrder = await orchestrator.selection.getApplicationOrder(
+        createdApplication.id,
+      );
 
       const createdPayment = await orchestrator.orders.createNewPayment({
-        order_id: applicationOrders[0].id,
+        order_id: applicationOrder.id,
       });
 
       testData.user1.application = createdApplication;
@@ -215,17 +214,16 @@ describe("GET /v1/selection-service/applications/{id}/payments", () => {
           cpf: "333.333.333-33",
         });
 
-      const applicationOrders =
-        await orchestrator.selection.getApplicationOrders(
-          createdApplication.id,
-        );
+      const applicationOrder = await orchestrator.selection.getApplicationOrder(
+        createdApplication.id,
+      );
 
       const createdPayment = await orchestrator.orders.createNewPayment({
-        order_id: applicationOrders[0].id,
+        order_id: applicationOrder.id,
       });
 
       const createdPayment2 = await orchestrator.orders.createNewPayment({
-        order_id: applicationOrders[0].id,
+        order_id: applicationOrder.id,
       });
 
       testData.user1.application = createdApplication;
@@ -300,13 +298,12 @@ describe("GET /v1/selection-service/applications/{id}/payments", () => {
           cpf: "222.222.222-22",
         });
 
-      const applicationOrders =
-        await orchestrator.selection.getApplicationOrders(
-          createdApplication.id,
-        );
+      const applicationOrder = await orchestrator.selection.getApplicationOrder(
+        createdApplication.id,
+      );
 
       const createdPayment = await orchestrator.orders.createNewPayment({
-        order_id: applicationOrders[0].id,
+        order_id: applicationOrder.id,
       });
 
       testData.user1.application = createdApplication;

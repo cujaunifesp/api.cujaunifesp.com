@@ -210,7 +210,7 @@ async function createApplicationOrder({ applicationId, orderId }) {
   return results.rows[0];
 }
 
-async function findOrdersByApplicationId(applicationId) {
+async function findOrderByApplicationId(applicationId) {
   const results = await database.query({
     text: `
       WITH payments AS (
@@ -249,7 +249,7 @@ async function findOrdersByApplicationId(applicationId) {
     values: [applicationId],
   });
 
-  return results.rows;
+  return results.rows[0];
 }
 
 async function findPaymentsByApplicationId(applicationId) {
@@ -285,6 +285,6 @@ export default Object.freeze({
   findById,
   findByEmail,
   createApplicationOrder,
-  findOrdersByApplicationId,
+  findOrderByApplicationId,
   findPaymentsByApplicationId,
 });

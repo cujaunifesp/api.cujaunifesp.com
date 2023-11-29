@@ -15,10 +15,9 @@ async function getSocioeconomicQuestionsBySelectionId(id) {
   return socioecocomicQuestions;
 }
 
-async function getOrdersFromApplication(applicationId) {
-  const findedOrders =
-    await application.findOrdersByApplicationId(applicationId);
-  return findedOrders;
+async function getOrderFromApplication(applicationId) {
+  const findedOrder = await application.findOrderByApplicationId(applicationId);
+  return findedOrder;
 }
 
 async function getPaymentsFromApplication(applicationId) {
@@ -48,7 +47,7 @@ async function searchApplicationsByEmail(emailToSearch) {
 export default Object.freeze({
   getCurrentSelection,
   getSocioeconomicQuestionsBySelectionId,
-  getOrdersFromApplication,
+  getOrderFromApplication,
   getSelectionApplicationsGroups,
   getPaymentsFromApplication,
   getApplication,
