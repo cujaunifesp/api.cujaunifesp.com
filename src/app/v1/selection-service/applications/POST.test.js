@@ -447,6 +447,87 @@ describe("POST /v1/selection-service/applications", () => {
       });
     });
 
+    test("inscrição com email duplicado", async () => {
+      const date = new Date();
+      date.setDate(date.getDate() + 2);
+
+      const createdSelection = await orchestrator.selection.createNewSelection({
+        published_at: new Date(),
+        applications_end_date: date,
+      });
+
+      const createdGroup1 =
+        await orchestrator.selection.createNewSelectionGroup({
+          title: "Reserva de Vagas 1",
+          code: "T1",
+          selection_id: createdSelection.id,
+        });
+
+      const userToken = orchestrator.auth.createUserToken({
+        method: "email_verification",
+        role: "visitor",
+        email: "duplicate_email@teste.com",
+      });
+
+      await fetch(`${orchestrator.host}/v1/selection-service/applications`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: JSON.stringify({
+          name: "Nome completo",
+          email: "duplicate_email@teste.com",
+          phone: "11999999999",
+          cpf: "123.456.789-00",
+          identity_document: "999999999",
+          address: "Rua Pedro de Toledo",
+          zip_code: "04039032",
+          city: "São Paulo",
+          state: "SP",
+          sabbatarian: false,
+          special_assistance: false,
+          selected_groups_ids: [createdGroup1.id],
+          selection_id: createdSelection.id,
+        }),
+      });
+
+      const response = await fetch(
+        `${orchestrator.host}/v1/selection-service/applications`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+          body: JSON.stringify({
+            name: "Nome completo",
+            email: "duplicate_email@teste.com",
+            phone: "11999999999",
+            cpf: "123.456.789-01",
+            identity_document: "999999999",
+            address: "Rua Pedro de Toledo",
+            zip_code: "04039032",
+            city: "São Paulo",
+            state: "SP",
+            sabbatarian: false,
+            special_assistance: false,
+            selected_groups_ids: [createdGroup1.id],
+            selection_id: createdSelection.id,
+          }),
+        },
+      );
+
+      const responseBody = await response.json();
+
+      expect(response.status).toEqual(422);
+      expect(responseBody.error).toEqual({
+        message: "Esse email já está sendo usado em outra inscrição.",
+        action:
+          "Entre em contato com o suporte se acreditar que isso é um erro.",
+        statusCode: 422,
+        name: "ValidationError",
+      });
+    });
+
     test("inscrição fora do prazo", async () => {
       const createdSelection = await orchestrator.selection.createNewSelection({
         published_at: new Date(),

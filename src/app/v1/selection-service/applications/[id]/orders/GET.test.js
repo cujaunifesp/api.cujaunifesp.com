@@ -105,7 +105,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
 
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user2@teste.com",
+          email: "user-another@teste.com",
           selection_id: createdSelection.id,
           selected_groups_ids: [createdGroup.id],
         });
@@ -149,6 +149,11 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
 
   describe("Usuário autenticado bem intencionado", () => {
     test("com application_id válido, 1 pedido e nenhum pagamento", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        email: "user1@teste.com",
+        method: "email_verification",
+      });
+
       const createdApplication =
         await orchestrator.selection.createNewApplication({
           email: "user1@teste.com",
@@ -163,7 +168,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+          headers: { Authorization: `Bearer ${userToken}` },
         },
       );
 
@@ -185,9 +190,14 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
     });
 
     test("com application_id válido, 1 pedido e 1 pagamento em processamento", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        email: "user2@teste.com",
+        method: "email_verification",
+      });
+
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user1@teste.com",
+          email: "user2@teste.com",
           selection_id: testData.selection.id,
           selected_groups_ids: [testData.selectionApplicationGroup.id],
           cpf: "211.111.111-11",
@@ -209,7 +219,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+          headers: { Authorization: `Bearer ${userToken}` },
         },
       );
 
@@ -231,9 +241,14 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
     });
 
     test("com application_id válido, 1 pedido e 1 pagamento aprovado", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        email: "user3@teste.com",
+        method: "email_verification",
+      });
+
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user1@teste.com",
+          email: "user3@teste.com",
           selection_id: testData.selection.id,
           selected_groups_ids: [testData.selectionApplicationGroup.id],
           cpf: "311.111.111-11",
@@ -257,7 +272,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+          headers: { Authorization: `Bearer ${userToken}` },
         },
       );
 
@@ -279,9 +294,14 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
     });
 
     test("com application_id válido, 2 pedidos", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        email: "user4@teste.com",
+        method: "email_verification",
+      });
+
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user1@teste.com",
+          email: "user4@teste.com",
           selection_id: testData.selection.id,
           selected_groups_ids: [testData.selectionApplicationGroup.id],
           cpf: "411.111.111-11",
@@ -309,7 +329,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+          headers: { Authorization: `Bearer ${userToken}` },
         },
       );
 
@@ -341,9 +361,14 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
     });
 
     test("com application_id válido, 3 pedidos", async () => {
+      const userToken = orchestrator.auth.createUserToken({
+        email: "user5@teste.com",
+        method: "email_verification",
+      });
+
       const createdApplication =
         await orchestrator.selection.createNewApplication({
-          email: "user1@teste.com",
+          email: "user5@teste.com",
           selection_id: testData.selection.id,
           selected_groups_ids: [testData.selectionApplicationGroup.id],
           cpf: "511.111.111-11",
@@ -382,7 +407,7 @@ describe("GET /v1/selection-service/applications/{id}/orders", () => {
         `${orchestrator.host}/v1/selection-service/applications/${createdApplication.id}/orders`,
         {
           method: "GET",
-          headers: { Authorization: `Bearer ${testData.user1.userToken}` },
+          headers: { Authorization: `Bearer ${userToken}` },
         },
       );
 

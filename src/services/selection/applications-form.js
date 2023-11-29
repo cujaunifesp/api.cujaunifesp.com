@@ -6,6 +6,7 @@ import { ValidationError } from "utils/errors";
 async function applyToSelection(applicationToApply) {
   await throwIfSelectionDeadlineOut(applicationToApply.selection_id);
   await throwIfDuplicateApplicationsForCPF(applicationToApply);
+  await throwIfDuplicateApplicationsForEmail(applicationToApply);
 
   const createdAppplication =
     await application.createApplicationsAndApplyToGroups({
@@ -50,6 +51,21 @@ async function throwIfDuplicateApplicationsForCPF(applicationToCheck) {
   if (applicationsCount > 0) {
     throw new ValidationError({
       message: "Esse CPF já está sendo usado em outra inscrição.",
+      action: "Entre em contato com o suporte se acreditar que isso é um erro.",
+      statusCode: 422,
+    });
+  }
+}
+
+async function throwIfDuplicateApplicationsForEmail(applicationToCheck) {
+  const applicationsCount = await application.countWithSelectionAndEmail({
+    email: applicationToCheck.email,
+    selectionId: applicationToCheck.selection_id,
+  });
+
+  if (applicationsCount > 0) {
+    throw new ValidationError({
+      message: "Esse email já está sendo usado em outra inscrição.",
       action: "Entre em contato com o suporte se acreditar que isso é um erro.",
       statusCode: 422,
     });

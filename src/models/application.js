@@ -117,6 +117,20 @@ async function countWithSelectionAndCPF({ cpf, selectionId }) {
   return results.rows[0].applications_count;
 }
 
+async function countWithSelectionAndEmail({ email, selectionId }) {
+  const results = await database.query({
+    text: `
+      SELECT count(applications.id) AS applications_count
+      FROM applications
+      WHERE applications.email = $1
+        AND applications.selection_id = $2;
+    `,
+    values: [email, selectionId],
+  });
+
+  return results.rows[0].applications_count;
+}
+
 async function findById(id) {
   const results = await database.query({
     text: `
@@ -228,6 +242,7 @@ export default Object.freeze({
   createApplicationsAndApplyToGroups,
   findByIdWithSelectionGroups,
   countWithSelectionAndCPF,
+  countWithSelectionAndEmail,
   findById,
   findByEmail,
   createApplicationOrder,
