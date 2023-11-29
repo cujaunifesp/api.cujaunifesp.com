@@ -179,9 +179,9 @@ async function closeSelectionApplications(selectionId) {
   });
 }
 
-async function getApplicationOrders(applicationId) {
+async function getApplicationOrder(applicationId) {
   const findedOrders =
-    await selectionQueryService.getOrdersFromApplication(applicationId);
+    await selectionQueryService.getOrderFromApplication(applicationId);
   return findedOrders;
 }
 
@@ -202,6 +202,6 @@ export default Object.freeze({
   createNewSocioeconomicQuestionOption,
   createNewApplication,
   closeSelectionApplications,
-  getApplicationOrders,
+  getApplicationOrder,
   createApplicationOrder,
 });

@@ -1,5 +1,6 @@
 import authorizator from "src/services/auth/authorizator";
 import applicationsFormService from "src/services/selection/applications-form";
+import selectionQueryService from "src/services/selection/selection-query";
 import controller from "utils/controller";
 import validator from "utils/validator";
 
@@ -45,6 +46,29 @@ export async function POST(request) {
       await applicationsFormService.applyToSelection(secureRequestBody);
 
     return controller.response.ok(201, { ...createdApplication });
+  } catch (error) {
+    return controller.response.error(error);
+  }
+}
+
+export async function GET(request) {
+  try {
+    const email = request.nextUrl.searchParams.get("email");
+    const secureParams = validator.run(
+      { email },
+      {
+        email: { required: true, type: validator.types.EMAIL },
+      },
+    );
+
+    await authorizator.request(request.headers).can("GET:APPLICATIONS", {
+      resource: { email },
+    });
+
+    const searchedApplications =
+      await selectionQueryService.searchApplicationsByEmail(email);
+
+    return controller.response.ok(200, searchedApplications);
   } catch (error) {
     return controller.response.error(error);
   }

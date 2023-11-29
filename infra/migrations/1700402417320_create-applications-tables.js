@@ -82,6 +82,12 @@ exports.up = (pgm) => {
       onUpdate: "CASCADE",
       notNull: true,
     },
+
+    created_at: {
+      type: "timestamp with time zone",
+      notNull: true,
+      default: pgm.func("(now() at time zone 'utc')"),
+    },
   });
 
   pgm.createTable("applications_in_groups", {

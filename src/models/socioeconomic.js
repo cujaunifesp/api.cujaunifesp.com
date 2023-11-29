@@ -99,9 +99,62 @@ async function findQuestionById(questionId) {
   return results.rows[0];
 }
 
+async function findAnswersByApplicationId(applicationId) {
+  const results = await database.query({
+    text: `
+    SELECT 
+      answers.*,
+      questions.text AS question_text,
+      questions.number AS question_number,
+      questions.type AS question_type,
+      COALESCE(
+        JSONB_AGG(
+          JSONB_BUILD_OBJECT(
+            'id', options.id, 
+            'label', options.label,
+            'number', options.number
+          ) 
+          ORDER BY options.number ASC
+        ) FILTER (WHERE options.id IS NOT NULL),
+        '[]'::JSONB
+      ) AS options
+    FROM 
+      socioeconomic_answers answers
+    LEFT JOIN 
+      socioeconomic_questions questions ON questions.id = answers.socioeconomic_question_id
+    LEFT JOIN
+      socioeconomic_questions_options options ON questions.id = options.socioeconomic_question_id
+    WHERE 
+      application_id = $1
+    GROUP BY
+      questions.id, answers.id
+    ORDER BY 
+      questions.number ASC;
+    `,
+    values: [applicationId],
+  });
+
+  return results.rows;
+}
+
+async function deleteAnswersByApplicationId(applicationId) {
+  const results = await database.query({
+    text: `
+      DELETE FROM socioeconomic_answers
+      WHERE application_id = $1
+      RETURNING *
+    `,
+    values: [applicationId],
+  });
+
+  return results.rows;
+}
+
 export default Object.freeze({
   findQuestionsBySelectionId,
   createSocioeconmicAnswers,
   countApplicationAnswersByQuestionId,
   findQuestionById,
+  findAnswersByApplicationId,
+  deleteAnswersByApplicationId,
 });

@@ -1,3 +1,4 @@
+import email from "infra/email-sender/email";
 import application from "src/models/application";
 import selection from "src/models/selection";
 import ordersControlService from "src/services/orders/orders-control";
@@ -6,6 +7,7 @@ import { ValidationError } from "utils/errors";
 async function applyToSelection(applicationToApply) {
   await throwIfSelectionDeadlineOut(applicationToApply.selection_id);
   await throwIfDuplicateApplicationsForCPF(applicationToApply);
+  await throwIfDuplicateApplicationsForEmail(applicationToApply);
 
   const createdAppplication =
     await application.createApplicationsAndApplyToGroups({
@@ -18,6 +20,13 @@ async function applyToSelection(applicationToApply) {
   );
 
   const createdOrder = await createApplicationOrder(queriedApplication);
+
+  await email.sendWithTemplate({
+    to: queriedApplication.email,
+    subject: "Acompanhe a sua inscrição",
+    template: email.templates.newApplication,
+    replacements: {},
+  });
 
   return queriedApplication;
 }
@@ -50,6 +59,21 @@ async function throwIfDuplicateApplicationsForCPF(applicationToCheck) {
   if (applicationsCount > 0) {
     throw new ValidationError({
       message: "Esse CPF já está sendo usado em outra inscrição.",
+      action: "Entre em contato com o suporte se acreditar que isso é um erro.",
+      statusCode: 422,
+    });
+  }
+}
+
+async function throwIfDuplicateApplicationsForEmail(applicationToCheck) {
+  const applicationsCount = await application.countWithSelectionAndEmail({
+    email: applicationToCheck.email,
+    selectionId: applicationToCheck.selection_id,
+  });
+
+  if (applicationsCount > 0) {
+    throw new ValidationError({
+      message: "Esse email já está sendo usado em outra inscrição.",
       action: "Entre em contato com o suporte se acreditar que isso é um erro.",
       statusCode: 422,
     });

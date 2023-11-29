@@ -787,7 +787,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const createdQuestionInputText =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta de multipla escolha",
+          text: "Essa é uma pergunta de texto",
           type: "text",
           number: 2,
           selection_id: createdSelection.id,
@@ -795,7 +795,7 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
 
       const createdQuestionInputNumber =
         await orchestrator.selection.createNewSocioeconomicQuestion({
-          text: "Essa é uma pergunta de multipla escolha",
+          text: "Essa é uma pergunta de número",
           type: "number",
           number: 3,
           selection_id: createdSelection.id,

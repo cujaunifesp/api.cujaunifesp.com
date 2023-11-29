@@ -15,10 +15,9 @@ async function getSocioeconomicQuestionsBySelectionId(id) {
   return socioecocomicQuestions;
 }
 
-async function getOrdersFromApplication(applicationId) {
-  const findedOrders =
-    await application.findOrdersByApplicationId(applicationId);
-  return findedOrders;
+async function getOrderFromApplication(applicationId) {
+  const findedOrder = await application.findOrderByApplicationId(applicationId);
+  return findedOrder;
 }
 
 async function getPaymentsFromApplication(applicationId) {
@@ -34,15 +33,30 @@ async function getSelectionApplicationsGroups(selectionId) {
 }
 
 async function getApplication(applicationId) {
-  const findedApplication = await application.findById(applicationId);
+  const findedApplication =
+    await application.findByIdWithSelectionGroups(applicationId);
   return findedApplication;
+}
+
+async function searchApplicationsByEmail(emailToSearch) {
+  const findedApplications =
+    await application.findByEmailWithSelectionGroups(emailToSearch);
+  return findedApplications;
+}
+
+async function getApplicationAnswers(applicationId) {
+  const findedAnswers =
+    await socioeconomic.findAnswersByApplicationId(applicationId);
+  return findedAnswers;
 }
 
 export default Object.freeze({
   getCurrentSelection,
   getSocioeconomicQuestionsBySelectionId,
-  getOrdersFromApplication,
+  getOrderFromApplication,
   getSelectionApplicationsGroups,
   getPaymentsFromApplication,
   getApplication,
+  searchApplicationsByEmail,
+  getApplicationAnswers,
 });

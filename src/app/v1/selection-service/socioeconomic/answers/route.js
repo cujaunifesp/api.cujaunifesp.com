@@ -1,4 +1,6 @@
+import application from "src/models/application";
 import authorizator from "src/services/auth/authorizator";
+import selectionQueryService from "src/services/selection/selection-query";
 import socioeconomicFormService from "src/services/selection/socioeconomic-form";
 import controller from "utils/controller";
 import validator from "utils/validator";
@@ -37,6 +39,56 @@ export async function POST(request) {
     return controller.response.ok(201, [...createdAnswers]);
   } catch (error) {
     console.error(error);
+    return controller.response.error(error);
+  }
+}
+
+export async function GET(request) {
+  try {
+    const applicationId = request.nextUrl.searchParams.get("application_id");
+
+    const requestedApplication =
+      await controller.request.getResourceByRequestParams({
+        idParam: applicationId,
+        resourceModel: application,
+      });
+
+    await authorizator
+      .request(request.headers)
+      .can("GET:APPLICATIONS_ANSWERS", {
+        resource: requestedApplication,
+      });
+
+    const applicationAnswers =
+      await selectionQueryService.getApplicationAnswers(applicationId);
+
+    return controller.response.ok(200, [...applicationAnswers]);
+  } catch (error) {
+    return controller.response.error(error);
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const applicationId = request.nextUrl.searchParams.get("application_id");
+
+    const requestedApplication =
+      await controller.request.getResourceByRequestParams({
+        idParam: applicationId,
+        resourceModel: application,
+      });
+
+    await authorizator
+      .request(request.headers)
+      .can("DELETE:APPLICATIONS_ANSWERS", {
+        resource: requestedApplication,
+      });
+
+    const deletedAnswers =
+      await socioeconomicFormService.resetApplicationAnswers(applicationId);
+
+    return controller.response.ok(201, [...deletedAnswers]);
+  } catch (error) {
     return controller.response.error(error);
   }
 }

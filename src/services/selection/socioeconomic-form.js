@@ -146,6 +146,13 @@ async function throwIfInvalidAnswerValue(answer, question) {
   );
 }
 
+async function resetApplicationAnswers(applicationId) {
+  const deletedAnswers =
+    await socioeconomic.deleteAnswersByApplicationId(applicationId);
+  return deletedAnswers;
+}
+
 export default Object.freeze({
   submitSocioeconomicAnswersForApplication,
+  resetApplicationAnswers,
 });

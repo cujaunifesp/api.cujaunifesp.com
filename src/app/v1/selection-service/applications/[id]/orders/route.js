@@ -17,10 +17,10 @@ export async function GET(request, { params }) {
       resource: { application_id },
     });
 
-    const ordersFromApplication =
-      await selectionQueryService.getOrdersFromApplication(application_id);
+    const orderFromApplication =
+      await selectionQueryService.getOrderFromApplication(application_id);
 
-    return controller.response.ok(200, [...ordersFromApplication]);
+    return controller.response.ok(200, { ...orderFromApplication });
   } catch (error) {
     return controller.response.error(error);
   }
