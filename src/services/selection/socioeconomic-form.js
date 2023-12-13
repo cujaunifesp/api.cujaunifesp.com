@@ -9,6 +9,7 @@ async function submitSocioeconomicAnswersForApplication({
   answersToSave,
 }) {
   const answererApplication = await application.findById(applicationId);
+
   const questions = await socioeconomic.findQuestionsBySelectionId(
     answererApplication.selection_id,
   );
@@ -22,10 +23,11 @@ async function submitSocioeconomicAnswersForApplication({
     const answer = answersToSave[index];
 
     await throwIfAnswerDuplicates(answer, answererApplication.id);
-    await throwIfSelectionAnsweredMismatchApplication({
-      applicationToCheck: answererApplication,
+    await throwIfQuestionAnsweredNotFoundOnSelection({
       answerToCheck: answer,
+      socioeconomicFormQuestions: questions,
     });
+
     await throwIfInvalidAnswerValue(
       answer,
       questions.find(
@@ -45,19 +47,16 @@ async function submitSocioeconomicAnswersForApplication({
   return createdAnswers;
 }
 
-async function throwIfSelectionAnsweredMismatchApplication({
-  applicationToCheck,
+async function throwIfQuestionAnsweredNotFoundOnSelection({
   answerToCheck,
+  socioeconomicFormQuestions,
 }) {
   try {
-    const requestedQuestion = await socioeconomic.findQuestionById(
-      answerToCheck.socioeconomic_question_id,
+    const requestedQuestion = socioeconomicFormQuestions.find(
+      (question) => question.id === answerToCheck.socioeconomic_question_id,
     );
 
-    const applicationSelectionId = applicationToCheck.selection_id;
-    const questionSelectionId = requestedQuestion.selection_id;
-
-    if (applicationSelectionId !== questionSelectionId) {
+    if (!requestedQuestion) {
       throw new Error();
     }
   } catch (error) {
