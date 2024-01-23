@@ -39,12 +39,8 @@ async function findById(orderId) {
         orders.*,
         CASE 
           WHEN (SELECT paid_approved FROM payments) >= orders.amount THEN 'paid'
-          WHEN (SELECT paid_approved FROM payments) < orders.amount 
-            AND orders.expires_at < now()
-            OR (SELECT payments_count FROM payments) = 0 
-            AND orders.expires_at < now()
-            THEN 'not_paid'
           WHEN (SELECT pending_count FROM payments) > 0 THEN 'pending'
+          WHEN orders.expires_at < now() THEN 'not_paid'
           ELSE 'waiting'
         END AS status
       FROM orders
