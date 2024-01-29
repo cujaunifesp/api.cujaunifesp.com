@@ -15,8 +15,7 @@ async function submitSocioeconomicAnswersForApplication({
   );
 
   await throwIfSameQuestionsIds(answersToSave);
-  //await throwIfSelectionDeadlineOut(answererApplication.selection_id);
-  //Desativado devido À problemas na inscrição. Reativar depois
+  await throwIfSelectionDeadlineOut(answererApplication.selection_id);
 
   let answersToCreate = [];
 
