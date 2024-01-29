@@ -207,7 +207,6 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
       });
     });
 
-    /*
     test("em processo seletivo com as inscrições fechadas", async () => {
       const userToken = orchestrator.auth.createUserToken({
         method: "email_verification",
@@ -278,7 +277,6 @@ describe("POST /v1/selection-service/socioeconomic/answers", () => {
         statusCode: 422,
       });
     });
-    */
 
     test("com duas respostas para a mesma questão", async () => {
       const userToken = orchestrator.auth.createUserToken({
